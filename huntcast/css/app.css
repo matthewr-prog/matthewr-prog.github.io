@@ -51,8 +51,8 @@ main{flex:1 1 auto;min-height:0;position:relative;overflow:hidden}
 .btn:active{filter:brightness(.85)}
 
 .tabs{flex:0 0 auto;display:flex;background:#0b100a;border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:30}
-.tabs button{flex:1;min-height:var(--tab-h);background:none;border:0;color:var(--muted);font-size:.78rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.tabs button span{font-size:1.35rem}
+.tabs button{flex:1;min-width:0;min-height:var(--tab-h);background:none;border:0;color:var(--muted);font-size:.72rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.tabs button span{font-size:1.25rem}
 .tabs button.active{color:var(--blaze);box-shadow:inset 0 3px 0 var(--blaze)}
 
 /* ---------- strips ---------- */
@@ -225,3 +225,61 @@ main{flex:1 1 auto;min-height:0;position:relative;overflow:hidden}
 .wf{width:24px;height:24px;transition:transform .15s,opacity .15s;filter:drop-shadow(0 1px 2px #000a)}
 .wbig{width:44px;height:44px;transition:transform .15s;filter:drop-shadow(0 2px 4px #000b)}
 #miniMap{cursor:pointer}
+
+/* ---------- sponsor ad bar (flex item under the header: never overlaps the map) ---------- */
+.adbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;justify-content:center;min-height:36px;max-height:52px;padding:4px 10px;background:#121a0f;border-bottom:1px solid var(--line);font-size:.78rem;color:var(--muted);line-height:1.25;overflow:hidden;position:relative;z-index:15}
+.adbar a{color:var(--lime);font-weight:600;text-decoration:underline;overflow-wrap:anywhere}
+.ad-tag{flex:0 0 auto;font-size:.62rem;text-transform:uppercase;letter-spacing:.6px;border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:var(--muted)}
+.adbar-empty{font-size:.74rem}
+.adbar-empty .ad-text{text-align:center}
+.adbar .ad-link{display:flex;text-decoration:none}
+.adbar img{display:block;max-height:44px;max-width:100%;object-fit:contain;border-radius:4px}
+
+/* ---------- Regs ---------- */
+.regs .card,.shop .card{margin-left:0;margin-right:0}
+.regs-sel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.regs-sel label{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--muted);min-width:0}
+.regs select{width:100%;min-height:44px;background:#0d130b;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:.95rem}
+.regs a:not(.btn),.shop a:not(.btn){color:var(--lime)}
+.regs .btn{display:inline-flex;align-items:center;text-decoration:none;margin:4px 0 8px}
+.regs h3 small{font-weight:400;font-size:.78rem}
+.rg-item{border-top:1px solid var(--line);padding:10px 0}
+.rg-item:first-of-type{border-top:0;padding-top:2px}
+.rg-item.in{border-left:3px solid var(--lime);padding-left:9px;margin-left:-2px}
+.rg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.rg-top b{min-width:0;overflow-wrap:anywhere}
+.rg-badge{flex:0 0 auto;font-size:.7rem;font-weight:700;border-radius:999px;padding:3px 9px;text-align:right;max-width:46%}
+.rg-badge.in{background:#33521f;color:#d6f5a8}
+.rg-badge.soon{background:#4a3a14;color:#ffe29a}
+.rg-badge.out,.rg-badge.none{background:#222a1d;color:var(--muted)}
+.rg-dates{margin-top:4px;font-size:.88rem}
+.rg-meta{margin-top:3px;font-size:.78rem;color:var(--muted)}
+.rg-note{margin-top:4px;font-size:.8rem;color:#c9d3bd}
+.rg-wmus{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.rg-wmu{background:#33521f;color:#d6f5a8;border-radius:10px;padding:5px 10px;font-weight:700}
+.rg-wmu small{font-weight:400;opacity:.85}
+.rg-warn{margin-top:8px;font-size:.82rem;background:#4a3a14;color:#ffe29a;border-radius:10px;padding:8px 10px}
+.rg-wmuinfo{margin-top:8px;font-size:.84rem}
+.rg-cat{border-top:1px solid var(--line);padding:2px 0}
+.rg-cat:first-of-type{border-top:0}
+.rg-cat summary{min-height:44px;display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer}
+.rg-cat p{margin:2px 0 10px;font-size:.88rem}
+.rg-count{font-size:.7rem;font-weight:700;background:#33521f;color:#d6f5a8;border-radius:999px;padding:2px 8px}
+.rg-link{display:block;padding:11px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.rg-link:first-of-type{border-top:0}
+.regs .disclaimer{margin:14px 0}
+
+/* ---------- Shop ---------- */
+.shop-empty{text-align:center}
+.shop-emoji{font-size:2.4rem}
+.shop-empty .btn{display:inline-flex;align-items:center;text-decoration:none;margin-top:6px}
+.shop-card{display:flex;gap:12px;align-items:flex-start}
+.shop-img{width:84px;height:84px;object-fit:cover;border-radius:12px;flex:0 0 auto;background:#0d130b}
+.shop-info{flex:1;min-width:0}
+.shop-info p{margin:4px 0 10px;font-size:.88rem}
+.shop-info .btn{display:inline-flex;align-items:center;text-decoration:none}
+.chip-s{font-size:.7rem;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted)}
+.shop-cats{padding-left:0}
+.pill-btn{padding:8px 14px;min-height:40px}
+.pill-btn.sel{background:var(--olive)!important;color:#10160b!important;border-color:var(--olive)!important}
+.shop-note{margin-top:14px}
