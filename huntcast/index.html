@@ -44,6 +44,49 @@
         </div>
       </article>
 
+      <article class="card scrub-card" id="hourCard">
+        <div class="row-between">
+          <h3>Hour-by-hour scrubber</h3>
+          <label class="switch"><input type="checkbox" id="nightToggle3"><span>Include night</span></label>
+        </div>
+        <div class="scrub-top">
+          <div><div class="hour-title" id="hourTitle">—</div><div class="muted" id="hourSub"></div></div>
+          <div class="hour-big"><div class="hour-score" id="hourScore">–</div><div class="hour-lbl" id="hourLbl"></div></div>
+        </div>
+        <div class="scrub" id="scrub">
+          <canvas id="heat" height="72"></canvas>
+          <input type="range" id="scrubSlider" min="0" max="23" step="1" value="0" aria-label="Hour of day — drag to scrub through the day">
+        </div>
+        <div class="scrub-btns">
+          <button type="button" id="hPrev" aria-label="Previous hour">◀ 1h</button>
+          <button type="button" id="hNow">Now</button>
+          <button type="button" id="hBest">★ Best</button>
+          <button type="button" id="hNext" aria-label="Next hour">1h ▶</button>
+        </div>
+        <p class="muted tiny scrub-help">Drag the orange handle across the day. Bars show each hour's score; dim bars are outside legal light.</p>
+        <div id="hourWhy" class="why"></div>
+        <div class="wx-grid" id="wxGrid"></div>
+        <div class="wind-row">
+          <svg id="compass" viewBox="-60 -60 120 120" width="112" height="112" aria-label="Wind direction"></svg>
+          <div id="scentText" class="scent-text"></div>
+        </div>
+        <h4>What moves this hour's score</h4>
+        <div id="factorList" class="factors"></div>
+      </article>
+
+      <article class="card mini-card" id="miniCard">
+        <div class="row-between">
+          <h3>Wind &amp; scent map <small class="muted" id="miniHour"></small></h3>
+          <button type="button" class="btn small" id="miniExpand">⤢ Full map</button>
+        </div>
+        <div class="mini-wrap">
+          <div id="miniMap" aria-label="Mini map showing wind and scent direction"></div>
+          <div class="mini-wx" id="miniWx"></div>
+          <div class="mini-layers" id="miniLayers"><button type="button" data-l="sat" class="sel">Satellite</button><button type="button" data-l="topo">Topo</button><button type="button" data-l="osm">Street</button></div>
+        </div>
+        <p class="muted tiny" id="miniNote">Tap the map to open the full map at this hour. Orange cone = where your scent drifts; small arrows show wind direction (one forecast point, assumed uniform across the view).</p>
+      </article>
+
       <article class="card">
         <h3>Best windows <small id="windowNote" class="muted"></small></h3>
         <div id="windows" class="windows"></div>
@@ -60,20 +103,6 @@
         <p class="muted tiny">Tap or drag across the chart to inspect an hour.</p>
       </article>
 
-      <article class="card" id="hourCard">
-        <div class="row-between">
-          <div><div class="hour-title" id="hourTitle">—</div><div class="muted" id="hourSub"></div></div>
-          <div class="hour-score" id="hourScore">–</div>
-        </div>
-        <div id="hourWhy" class="why"></div>
-        <div class="wx-grid" id="wxGrid"></div>
-        <div class="wind-row">
-          <svg id="compass" viewBox="-60 -60 120 120" width="112" height="112" aria-label="Wind direction"></svg>
-          <div id="scentText" class="scent-text"></div>
-        </div>
-        <h4>What moves this hour's score</h4>
-        <div id="factorList" class="factors"></div>
-      </article>
 
       <article class="card">
         <h3>Sun &amp; moon</h3>
