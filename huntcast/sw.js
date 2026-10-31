@@ -1,5 +1,5 @@
 /* HuntCast service worker: offline app shell + opportunistic tile/forecast caching. */
-const VERSION = 'huntcast-v1.2.1';
+const VERSION = 'huntcast-v1.2.2';
 const SHELL = VERSION + '-shell';
 const TILES = 'huntcast-tiles-v1';
 const API = 'huntcast-api-v1';
@@ -15,7 +15,7 @@ const SHELL_FILES = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES))
+  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES.map((f) => new Request(f, { cache: 'reload' }))))
     // data files are best-effort: a missing one must not block installing the app shell
     .then(() => caches.open(DATA).then((d) => Promise.all(DATA_FILES.map((f) => d.add(f).catch(() => null)))))
     .then(() => self.skipWaiting()));
@@ -38,7 +38,7 @@ self.addEventListener('fetch', (e) => {
   if (/tile\.openstreetmap\.org|arcgisonline\.com|opentopomap\.org/.test(url.host)) {
     e.respondWith(caches.open(TILES).then(async (c) => {
       const hit = await c.match(req);
-      const net = fetch(req).then((r) => { if (r && (r.ok || r.type === 'opaque')) { c.put(req, r.clone()); trim(TILES, 600); } return r; }).catch(() => hit);
+      const net = fetch(req, { cache: 'no-cache' }).then((r) => { if (r && (r.ok || r.type === 'opaque')) { c.put(req, r.clone()); trim(TILES, 600); } return r; }).catch(() => hit);
       return hit || net;
     }));
     return;
@@ -57,10 +57,18 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  // page loads: network-first (so updates show on the next open), cached copy when offline
+  if (req.mode === 'navigate') {
+    e.respondWith(fetch(req.url, { cache: 'no-cache' }).then((r) => {
+      if (r && r.ok) { const copy = r.clone(); caches.open(SHELL).then((c) => c.put('./index.html', copy)); }
+      return r;
+    }).catch(() => caches.open(SHELL).then((c) => c.match('./index.html'))));
+    return;
+  }
   // app shell: stale-while-revalidate
   e.respondWith(caches.open(SHELL).then(async (c) => {
     const hit = await c.match(req, { ignoreSearch: true });
-    const net = fetch(req).then((r) => { if (r.ok) c.put(req, r.clone()); return r; }).catch(() => null);
+    const net = fetch(req, { cache: 'no-cache' }).then((r) => { if (r.ok) c.put(req, r.clone()); return r; }).catch(() => null);
     if (hit) { net.catch(() => {}); return hit; }
     const r = await net;
     return r || (req.mode === 'navigate' ? c.match('./index.html') : Response.error());
