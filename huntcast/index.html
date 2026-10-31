@@ -19,6 +19,9 @@
   <button id="refreshBtn" class="icon-btn" aria-label="Refresh forecast">⟳</button>
 </header>
 
+<!-- Sponsor ad bar: filled from data/ads.json by js/ads.js (flex item, never overlaps the map) -->
+<aside id="adbar" class="adbar" aria-label="Sponsor"></aside>
+
 <div id="banner" class="banner" hidden></div>
 
 <main>
@@ -197,12 +200,39 @@
       </div>
     </div>
   </section>
+  <!-- ===================== REGS ===================== -->
+  <section id="view-regs" class="view">
+    <div class="pad-x regs">
+      <h2>Hunting regs &amp; seasons</h2>
+      <div class="card regs-pick">
+        <div class="regs-sel">
+          <label>State<select id="regState" aria-label="State"></select></label>
+          <label>County<select id="regCounty" aria-label="County"></select></label>
+        </div>
+        <div id="regSource" class="muted tiny"></div>
+      </div>
+      <div id="regBody"></div>
+      <p class="disclaimer" id="regDisclaimer">Always confirm with the official regulations before hunting.</p>
+    </div>
+  </section>
+
+  <!-- ===================== SHOP ===================== -->
+  <section id="view-shop" class="view">
+    <div class="pad-x shop">
+      <h2>Shop</h2>
+      <p class="muted tiny">Stores and outfitters that partner with HuntCast.</p>
+      <div id="shopCats" class="strip shop-cats" hidden></div>
+      <div id="shopBody"></div>
+    </div>
+  </section>
 </main>
 
 <nav class="tabs" aria-label="Main">
   <button data-view="forecast" class="active"><span>📊</span>Forecast</button>
   <button data-view="map"><span>🗺️</span>Map</button>
   <button data-view="spots"><span>⭐</span>Spots</button>
+  <button data-view="regs"><span>📋</span>Regs</button>
+  <button data-view="shop"><span>🛒</span>Shop</button>
   <button data-view="info"><span>ℹ️</span>Info</button>
 </nav>
 <div id="toast" class="toast" hidden></div>
@@ -214,6 +244,9 @@
 <script src="js/weather.js"></script>
 <script src="js/species.js"></script>
 <script src="js/model.js"></script>
+<script src="js/ads.js"></script>
+<script src="js/regs.js"></script>
+<script src="js/shop.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

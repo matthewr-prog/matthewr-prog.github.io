@@ -1,11 +1,13 @@
 /* HuntCast service worker: offline app shell + opportunistic tile/forecast caching. */
-const VERSION = 'huntcast-v1.1.1';
+const VERSION = 'huntcast-v1.2.0';
 const SHELL = VERSION + '-shell';
 const TILES = 'huntcast-tiles-v1';
 const API = 'huntcast-api-v1';
+const DATA = 'huntcast-data-v1'; // JSON data (regs, shop, ads): network-first, kept for offline
+const DATA_FILES = ['./data/regs/index.json', './data/regs/PA.json', './data/shop.json', './data/ads.json'];
 const SHELL_FILES = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
-  './js/util.js', './js/astro.js', './js/weather.js', './js/species.js', './js/model.js', './js/app.js',
+  './js/util.js', './js/astro.js', './js/weather.js', './js/species.js', './js/model.js', './js/ads.js', './js/regs.js', './js/shop.js', './js/app.js',
   './vendor/leaflet.js', './vendor/leaflet.css', './vendor/suncalc.js',
   './icons/icon.svg',
   './icons/icon-192.png',
@@ -13,7 +15,10 @@ const SHELL_FILES = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES))
+    // data files are best-effort: a missing one must not block installing the app shell
+    .then(() => caches.open(DATA).then((d) => Promise.all(DATA_FILES.map((f) => d.add(f).catch(() => null)))))
+    .then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith('huntcast-v') && k !== SHELL).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
@@ -41,6 +46,16 @@ self.addEventListener('fetch', (e) => {
   // weather APIs: not intercepted. The app keeps its own last-forecast copy in localStorage so it can flag "offline" honestly.
   if (/open-meteo\.com$/.test(url.host)) return;
   if (url.origin !== location.origin) return; // Nominatim etc.: network only
+
+  // JSON data (data/regs/*.json, shop.json, ads.json): network-first so yearly updates show up at once,
+  // falling back to the last copy when offline.
+  if (/\/data\/.+\.json$/.test(url.pathname)) {
+    e.respondWith(fetch(req.url, { cache: 'no-cache' }).then((r) => {
+      if (r && r.ok) { const copy = r.clone(); caches.open(DATA).then((c) => c.put(req, copy)); }
+      return r;
+    }).catch(() => caches.open(DATA).then((c) => c.match(req, { ignoreSearch: true })).then((hit) => hit || Response.error())));
+    return;
+  }
 
   // app shell: stale-while-revalidate
   e.respondWith(caches.open(SHELL).then(async (c) => {
