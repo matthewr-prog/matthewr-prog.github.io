@@ -310,3 +310,23 @@ main{flex:1 1 auto;min-height:0;position:relative;overflow:hidden}
 .bl-bar{position:fixed;left:8px;right:8px;bottom:calc(var(--tab-h) + var(--safe-b,0px) + 8px);z-index:900;display:flex;gap:6px}
 .bl-bar-main{flex:1;min-width:0;text-align:left;padding:10px 12px;border-radius:14px;border:2px solid var(--blaze);background:#10170ef5;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bl-bar-x{min-width:48px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:#fff}
+
+/* ---------- ping / share (v1.2.5) ---------- */
+.ping-btn{width:100%;margin:6px 0 10px;font-size:1.05rem;min-height:52px;background:var(--blaze);color:#1a0d00}
+.spot .dir{flex:1 1 55%}
+.spot .shr{flex:1 1 30%;order:9;font-weight:700;color:#d7e3c2}
+.map-fab2{bottom:calc(var(--sheet-h,210px) + 74px);background:var(--olive);color:#10160b}
+.btn.alt{background:var(--panel2);color:#d7e3c2;border:1px solid var(--line)}
+.bl-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.sh-back{position:fixed;inset:0;z-index:2100;background:#000a;display:flex;align-items:flex-end;justify-content:center}
+.sh-box{width:100%;max-width:520px;background:#10170e;border-top:2px solid var(--blaze);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + var(--safe-b,0px));max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.sh-box h3{margin:0;color:var(--blaze)}
+.sh-info b{font-size:1.15rem;display:block;word-break:break-word}
+.sh-main{min-height:54px;font-size:1.1rem}
+.sh-row{display:flex;gap:8px}.sh-row .btn{flex:1;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.sh-save{display:flex;gap:8px}.sh-save input{flex:1;min-width:0;background:var(--panel2);color:#fff;border:1px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px}
+.sh-pre{white-space:pre-wrap;word-break:break-word;background:#0b100a;border:1px solid var(--line);border-radius:10px;padding:8px;font-size:.78rem;color:#9fb48a;margin:0}
+.shared-card{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 66px);z-index:1500;background:#10170ef7;border:2px solid var(--blaze);border-radius:16px;padding:12px 44px 12px 14px;box-shadow:0 8px 28px #000c}
+.sc-h{font-weight:800;font-size:1.05rem;word-break:break-word}
+.sc-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sc-x{position:absolute;top:6px;right:6px;min-width:40px;min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:#fff}
