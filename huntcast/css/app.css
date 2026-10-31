@@ -157,10 +157,11 @@ main{flex:1 1 auto;min-height:0;position:relative;overflow:hidden}
 .save-row{display:flex;gap:8px;margin-bottom:6px}
 .save-row input{flex:1;min-width:0;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--panel);padding:0 12px}
 .spot-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}
-.spot{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.spot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
 .spot .nm{flex:1;min-width:0}.spot .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spot button{min-height:44px;min-width:44px;border-radius:12px;border:1px solid var(--line);background:var(--panel2)}
 .spot .use{background:var(--olive);color:#10160b;font-weight:700;padding:0 14px;border:0}
+.spot .dir{flex:1 1 100%;order:9;background:var(--panel2);color:var(--blaze);font-weight:700;border-color:var(--blaze)}
 .spot.cur{border-color:var(--blaze)}
 .info .card{margin:8px 0 0}
 .prose{font-size:.92rem}.prose p{margin:.5em 0}.prose ul{padding-left:1.2em;margin:.4em 0}.prose li{margin:.3em 0}
