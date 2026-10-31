@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EmployMe — free local job board (Erie, PA)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b3a5b">
+<meta name="description" content="EmployMe: a free local job board. Results ranked only by your search — no paid boosts. No account, no tracking. Beta, Erie PA.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#/jobs" aria-label="EmployMe home"><img src="icons/icon.svg" alt="" width="30" height="30"><span>Employ<b>Me</b></span></a>
+  <span class="beta-pill">BETA</span>
+  <button id="installTop" class="btn small light" hidden>Install</button>
+</header>
+<div id="banner" class="banner" hidden></div>
+<main id="main"><div id="view" class="view" tabindex="-1"></div></main>
+<nav class="tabs" aria-label="Main">
+  <a href="#/jobs" data-tab="jobs"><i>🔍</i>Jobs</a>
+  <a href="#/saved" data-tab="saved"><i>🔖</i>Saved<em id="savedBadge" hidden></em></a>
+  <a href="#/profile" data-tab="profile"><i>👤</i>Profile</a>
+  <a href="#/post" data-tab="post"><i>➕</i>Post</a>
+  <a href="#/info" data-tab="info"><i>ℹ️</i>Info</a>
+</nav>
+<div id="sheetRoot"></div>
+<div id="toast" class="toast" hidden></div>
+<noscript><p style="padding:20px">EmployMe needs JavaScript. Call 814-838-2743 to reach All Seasons Placement.</p></noscript>
+<script src="js/util.js"></script>
+<script src="js/search.js"></script>
+<script src="js/views.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

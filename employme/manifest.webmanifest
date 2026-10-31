@@ -1,0 +1,18 @@
+{
+  "name": "EmployMe — Local Job Board",
+  "short_name": "EmployMe",
+  "description": "Free local job board. Ranked only by your search — no paid boosts. No account needed.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b3a5b",
+  "theme_color": "#0b3a5b",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
