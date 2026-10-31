@@ -658,7 +658,12 @@
     // If location permission was already granted earlier and no saved place, offer to use it silently
     loadForecast();
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-      navigator.serviceWorker.register('sw.js').catch((e) => console.warn('SW registration failed', e));
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+      }).catch((e) => console.warn('SW registration failed', e));
+      // when a new version takes over, reload once so the update shows right away
+      let hcReloaded = false, hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !hcReloaded) { hcReloaded = true; location.reload(); } hadController = true; });
     }
   }
   document.addEventListener('DOMContentLoaded', init);
