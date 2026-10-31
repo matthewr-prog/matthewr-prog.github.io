@@ -2,7 +2,7 @@
 (function (HC) {
   'use strict';
   const U = HC.Util, M = HC.Model, SP = HC.Species;
-  const VERSION = '1.2.0';
+  const VERSION = '1.2.3';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const HOUR = 3600000;
@@ -484,6 +484,10 @@
     map.on('baselayerchange', (e) => { S.layer = e.name; save(); });
     coneLayer = L.layerGroup().addTo(map);
     marker = L.marker([S.lat, S.lon], { icon: PIN, draggable: true, title: 'Hunting spot' }).addTo(map);
+    marker.bindPopup(() => {
+      const sv = findSpot(S.lat, S.lon), nm = U.esc(sv ? sv.name : (S.name || 'Hunting spot'));
+      return '<b>' + nm + '</b><br><a href="' + dirUrl(S.lat, S.lon) + '" target="_blank" rel="noopener">🧭 Directions</a>';
+    });
     marker.on('dragend', () => { const p = marker.getLatLng(); setLocation(p.lat, p.lng, null, {}); });
     map.on('click', (e) => setLocation(e.latlng.lat, e.latlng.lng, null, {}));
     updateMapOverlay();
@@ -544,10 +548,15 @@
   }
 
   /* ------------------------------------------------------------------ spots */
+  function dirUrl(lat, lon) { return 'https://www.google.com/maps/dir/?api=1&destination=' + (+lat).toFixed(5) + ',' + (+lon).toFixed(5) + '&travelmode=driving'; }
+  function openDirections(lat, lon, name) {
+    toast('Opening directions' + (name ? ' to ' + name : '') + '…');
+    if (!window.open(dirUrl(lat, lon), '_blank')) location.href = dirUrl(lat, lon);
+  }
   function findSpot(lat, lon) { return spots.find((s) => Math.abs(s.lat - lat) < 0.0015 && Math.abs(s.lon - lon) < 0.0015); }
   function renderSpots() {
     $('#spotEmpty').hidden = spots.length > 0;
-    $('#spotList').innerHTML = spots.map((s) => '<div class="spot' + (findSpot(S.lat, S.lon) === s ? ' cur' : '') + '" data-id="' + s.id + '"><div class="nm"><b>' + U.esc(s.name) + '</b><span class="muted tiny">' + s.lat.toFixed(4) + ', ' + s.lon.toFixed(4) + '</span></div><button class="ren" aria-label="Rename">✏️</button><button class="del" aria-label="Delete">🗑️</button><button class="use">Hunt here</button></div>').join('');
+    $('#spotList').innerHTML = spots.map((s) => '<div class="spot' + (findSpot(S.lat, S.lon) === s ? ' cur' : '') + '" data-id="' + s.id + '"><div class="nm"><b>' + U.esc(s.name) + '</b><span class="muted tiny">' + s.lat.toFixed(4) + ', ' + s.lon.toFixed(4) + '</span></div><button class="ren" aria-label="Rename">✏️</button><button class="del" aria-label="Delete">🗑️</button><button class="use">Hunt here</button><button class="dir" aria-label="Directions to ' + U.esc(s.name) + '">🧭 Directions</button></div>').join('');
   }
   function saveSpot(name) {
     const ex = findSpot(S.lat, S.lon);
@@ -629,7 +638,9 @@
     $('#spotSave').onclick = () => { saveSpot($('#spotName').value.trim()); $('#spotName').value = ''; };
     $('#spotList').addEventListener('click', (e) => {
       const el = e.target.closest('.spot'); if (!el) return; const s = spots.find((x) => x.id === el.dataset.id); if (!s) return;
-      if (e.target.closest('.use')) { setLocation(s.lat, s.lon, s.name, { fly: true, immediate: true }); showView('forecast'); }
+      if (e.target.closest('.dir')) openDirections(s.lat, s.lon, s.name);
+      else if (e.target.closest('.nm')) { if (confirm('Get driving directions to “' + s.name + '” in Google Maps?')) openDirections(s.lat, s.lon, s.name); }
+      else if (e.target.closest('.use')) { setLocation(s.lat, s.lon, s.name, { fly: true, immediate: true }); showView('forecast'); }
       else if (e.target.closest('.del')) { if (confirm('Delete “' + s.name + '”?')) { spots = spots.filter((x) => x !== s); saveSpots(); renderSpots(); updateLocUI(); } }
       else if (e.target.closest('.ren')) { const n = prompt('Rename spot', s.name); if (n && n.trim()) { s.name = n.trim().slice(0, 60); saveSpots(); renderSpots(); } }
     });
