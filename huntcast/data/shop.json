@@ -1,0 +1,9 @@
+{
+  "_readme": "HOW TO ADD A STORE: copy one object from \"_example\" into the \"stores\" array below (keep the commas right) and fill it in. Fields: name, url (https://...), description, image (optional: https URL or path like img/shop/store.png), category. The Shop tab shows ONLY \"stores\"; \"_example\" is never displayed.",
+  "stores": [],
+  "_example": [
+    { "name": "PLACEHOLDER — Example Gun & Archery", "url": "https://example.com", "description": "PLACEHOLDER: local gun shop and archery pro shop. Replace with a real partner.", "image": "", "category": "Gun shops" },
+    { "name": "PLACEHOLDER — Example Outdoors", "url": "https://example.com/outdoors", "description": "PLACEHOLDER: hunting clothing, blinds, trail cameras. Replace with a real partner.", "image": "", "category": "Outdoor stores" },
+    { "name": "PLACEHOLDER — Example Outfitters", "url": "https://example.com/outfitters", "description": "PLACEHOLDER: guided hunts and lodging. Replace with a real partner.", "category": "Outfitters" }
+  ]
+}
