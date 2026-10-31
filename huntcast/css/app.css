@@ -284,3 +284,29 @@ main{flex:1 1 auto;min-height:0;position:relative;overflow:hidden}
 .pill-btn{padding:8px 14px;min-height:40px}
 .pill-btn.sel{background:var(--olive)!important;color:#10160b!important;border-color:var(--olive)!important}
 .shop-note{margin-top:14px}
+
+/* ---------- beeline navigator ---------- */
+.bl{position:fixed;inset:0;z-index:2000;background:#0b100a;display:flex;flex-direction:column;align-items:center;padding:calc(10px + env(safe-area-inset-top,0px)) 14px calc(14px + var(--safe-b,0px));overflow-y:auto;text-align:center}
+.bl[hidden],.bl-bar[hidden]{display:none}
+.bl-top{width:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bl-top b{color:var(--blaze);font-size:1.15rem}.bl-top .muted{flex:1;text-align:left}
+.bl-x{min-width:48px;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:#fff;font-size:1.2rem}
+.bl-name{font-size:1.35rem;font-weight:800;margin-top:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bl-dial{position:relative;width:min(78vw,46vh,340px);aspect-ratio:1;margin:10px auto 4px}
+.bl-dial svg{width:100%;height:100%;filter:drop-shadow(0 6px 16px #000a)}
+.bl-dial #blPtr{transition:transform .25s ease-out}
+.bl-arrived{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#10160b;background:#8fa84fe6;border-radius:50%}
+.bl-arrived[hidden]{display:none}
+.bl-dist{font-size:3.4rem;font-weight:900;line-height:1.05;color:#fff}
+.bl-sub{font-size:1.15rem;color:var(--blaze);font-weight:700;min-height:1.4em}
+.bl-brg{font-size:1.7rem;font-weight:800;margin-top:4px;color:#d7e3c2}
+.bl-stat{margin-top:6px}
+.bl-note{margin-top:8px;padding:8px 12px;background:#2a2312;border:1px solid var(--amber);color:#ffd9a0;border-radius:10px;font-size:.9rem}
+.bl-note[hidden],.bl-perm[hidden]{display:none}
+.bl-perm{margin-top:10px}
+.bl-actions{margin-top:auto;padding-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.bl-road{color:#9fb48a;font-size:.85rem;text-decoration:underline}
+.bl.arrived .bl-dist{color:#b9d36a}
+.bl-bar{position:fixed;left:8px;right:8px;bottom:calc(var(--tab-h) + var(--safe-b,0px) + 8px);z-index:900;display:flex;gap:6px}
+.bl-bar-main{flex:1;min-width:0;text-align:left;padding:10px 12px;border-radius:14px;border:2px solid var(--blaze);background:#10170ef5;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl-bar-x{min-width:48px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:#fff}
