@@ -22,7 +22,7 @@
   }
   function placeholder() {
     bar().className = 'adbar adbar-empty';
-    bar().innerHTML = '<span class="ad-text">Your ad here — advertise with HuntCast: <a href="mailto:' + EMAIL + '?subject=HuntCast%20advertising">' + EMAIL + '</a></span>';
+    bar().innerHTML = '<span class="ad-text">Your ad here — <a href="mailto:' + EMAIL + '?subject=HuntCast%20advertising">Become a partner</a></span>';
   }
   let timer = null;
   function show(ads) {
