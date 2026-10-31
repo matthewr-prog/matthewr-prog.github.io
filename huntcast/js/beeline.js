@@ -47,7 +47,7 @@
       '<div class="muted tiny bl-stat" id="blStat"></div>' +
       '<div class="bl-note" id="blNote" hidden></div>' +
       '<button class="btn bl-perm" id="blPerm" hidden>Enable compass</button>' +
-      '<div class="bl-actions"><button class="btn small" id="blMap">🗺️ Show on map</button><a class="bl-road" id="blRoad" target="_blank" rel="noopener">Road route (Google Maps)</a></div>';
+      '<div class="bl-actions"><div class="bl-btns"><button class="btn small" id="blMap">🗺️ Show on map</button><button class="btn small alt" id="blShare">📤 Share spot</button><button class="btn small alt" id="blPing">📍 Ping me</button></div><a class="bl-road" id="blRoad" target="_blank" rel="noopener">Road route (Google Maps)</a></div>';
     document.body.appendChild(ov);
     bar = document.createElement('div'); bar.id = 'blBar'; bar.className = 'bl-bar'; bar.hidden = true;
     bar.innerHTML = '<button class="bl-bar-main" id="blBarMain">🧭 <span id="blBarTxt"></span></button><button class="bl-bar-x" id="blBarX" aria-label="Stop beeline">✕</button>';
@@ -55,6 +55,8 @@
     $('#blClose').onclick = stop;
     bar.querySelector('#blBarX').onclick = stop;
     $('#blMap').onclick = toMap;
+    $('#blShare').onclick = () => { if (st && st.opts.onShare) st.opts.onShare(); };
+    $('#blPing').onclick = () => { if (st && st.opts.onPing) st.opts.onPing(); };
     bar.querySelector('#blBarMain').onclick = () => { ov.hidden = false; bar.hidden = true; render(); };
     $('#blPerm').onclick = askCompass;
   }

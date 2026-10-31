@@ -2,7 +2,7 @@
 (function (HC) {
   'use strict';
   const U = HC.Util, M = HC.Model, SP = HC.Species;
-  const VERSION = '1.2.4';
+  const VERSION = '1.2.5';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const HOUR = 3600000;
@@ -486,11 +486,14 @@
     marker = L.marker([S.lat, S.lon], { icon: PIN, draggable: true, title: 'Hunting spot' }).addTo(map);
     marker.bindPopup(() => {
       const sv = findSpot(S.lat, S.lon), nm = U.esc(sv ? sv.name : (S.name || 'Hunting spot'));
-      return '<b>' + nm + '</b><br><a href="#" class="pop-dir" data-lat="' + S.lat + '" data-lon="' + S.lon + '" data-name="' + nm + '">🧭 Directions (beeline)</a>';
+      return '<b>' + nm + '</b><br><a href="#" class="pop-dir" data-lat="' + S.lat + '" data-lon="' + S.lon + '" data-name="' + nm + '">🧭 Directions (beeline)</a> · <a href="#" class="pop-shr">📤 Share</a>';
     });
     map.on('popupopen', (e) => {
-      const a = e.popup.getElement() && e.popup.getElement().querySelector('.pop-dir'); if (!a) return;
-      a.addEventListener('click', (ev) => { ev.preventDefault(); const sv = findSpot(S.lat, S.lon); map.closePopup(); openDirections(S.lat, S.lon, sv ? sv.name : (S.name || 'Hunting spot')); });
+      const el = e.popup.getElement(); if (!el) return;
+      const nameNow = () => { const sv = findSpot(S.lat, S.lon); return sv ? sv.name : (S.name || 'Hunting spot'); };
+      const a = el.querySelector('.pop-dir'), sh = el.querySelector('.pop-shr');
+      if (a) a.addEventListener('click', (ev) => { ev.preventDefault(); map.closePopup(); openDirections(S.lat, S.lon, nameNow()); });
+      if (sh) sh.addEventListener('click', (ev) => { ev.preventDefault(); HC.Share.shareSpot(nameNow(), S.lat, S.lon); });
     });
     marker.on('dragend', () => { const p = marker.getLatLng(); setLocation(p.lat, p.lng, null, {}); });
     map.on('click', (e) => setLocation(e.latlng.lat, e.latlng.lng, null, {}));
@@ -573,16 +576,38 @@
     beeTarget = { lat: +lat, lon: +lon, name: name || 'Hunting spot' }; beeUser = null;
     HC.Beeline.open(beeTarget, {
       roadUrl: dirUrl(lat, lon),
+      onShare: () => HC.Share.shareSpot(name || 'Hunting spot', lat, lon),
+      onPing: pingLocation,
       onUpdate: (u) => { beeUser = u; drawBeeline(); },
       onMap: () => { showView('map'); setTimeout(() => { if (!map) return; drawBeeline(); const pts = [[beeTarget.lat, beeTarget.lon]]; if (beeUser) pts.push([beeUser.lat, beeUser.lon]); map.fitBounds(pts.length > 1 ? pts : [pts[0], pts[0]], { padding: [60, 60], maxZoom: 17 }); }, 200); },
       onStop: clearBeeline
     });
     if (map) drawBeeline();
   }
+  function addSpot(name, lat, lon) {
+    if (findSpot(lat, lon)) { toast('Already in your saved spots'); return false; }
+    spots.unshift({ id: 's' + Date.now().toString(36), name: (name || 'Saved spot').slice(0, 60), lat: +(+lat).toFixed(5), lon: +(+lon).toFixed(5), created: Date.now() });
+    saveSpots(); renderSpots(); updateLocUI(); toast('★ Spot saved'); return true;
+  }
+  function pingLocation() { HC.Share.ping({ onSave: (name, lat, lon) => addSpot(name, lat, lon) }); }
+  /* Incoming ?spot=LAT,LON&name=… deep link -> "Shared spot" card (all text via textContent) */
+  function showShared(sp) {
+    const old = $('#sharedCard'); if (old) old.remove();
+    const c = document.createElement('div'); c.id = 'sharedCard'; c.className = 'shared-card'; c.setAttribute('role', 'dialog');
+    const h = document.createElement('div'); h.className = 'sc-h'; h.textContent = 'Shared spot: ' + sp.name; c.appendChild(h);
+    const s = document.createElement('div'); s.className = 'muted tiny'; s.textContent = sp.lat.toFixed(5) + ', ' + sp.lon.toFixed(5); c.appendChild(s);
+    const row = document.createElement('div'); row.className = 'sc-row'; c.appendChild(row);
+    const b = (cls, t, fn) => { const x = document.createElement('button'); x.className = cls; x.textContent = t; x.onclick = fn; row.appendChild(x); return x; };
+    b('btn small', '★ Save to my spots', () => { if (addSpot(sp.name, sp.lat, sp.lon)) c.remove(); });
+    b('btn small alt', '🧭 Beeline to it', () => { c.remove(); openDirections(sp.lat, sp.lon, sp.name); });
+    b('btn small alt', '🗺️ Show on map', () => { c.remove(); setLocation(sp.lat, sp.lon, sp.name, { fly: true, immediate: true }); showView('map'); });
+    const x = document.createElement('button'); x.className = 'sc-x'; x.textContent = '✕'; x.setAttribute('aria-label', 'Dismiss'); x.onclick = () => c.remove(); c.appendChild(x);
+    document.body.appendChild(c);
+  }
   function findSpot(lat, lon) { return spots.find((s) => Math.abs(s.lat - lat) < 0.0015 && Math.abs(s.lon - lon) < 0.0015); }
   function renderSpots() {
     $('#spotEmpty').hidden = spots.length > 0;
-    $('#spotList').innerHTML = spots.map((s) => '<div class="spot' + (findSpot(S.lat, S.lon) === s ? ' cur' : '') + '" data-id="' + s.id + '"><div class="nm"><b>' + U.esc(s.name) + '</b><span class="muted tiny">' + s.lat.toFixed(4) + ', ' + s.lon.toFixed(4) + '</span></div><button class="ren" aria-label="Rename">✏️</button><button class="del" aria-label="Delete">🗑️</button><button class="use">Hunt here</button><button class="dir" aria-label="Directions to ' + U.esc(s.name) + '">🧭 Directions</button></div>').join('');
+    $('#spotList').innerHTML = spots.map((s) => '<div class="spot' + (findSpot(S.lat, S.lon) === s ? ' cur' : '') + '" data-id="' + s.id + '"><div class="nm"><b>' + U.esc(s.name) + '</b><span class="muted tiny">' + s.lat.toFixed(4) + ', ' + s.lon.toFixed(4) + '</span></div><button class="ren" aria-label="Rename">✏️</button><button class="del" aria-label="Delete">🗑️</button><button class="use">Hunt here</button><button class="dir" aria-label="Directions to ' + U.esc(s.name) + '">🧭 Directions</button><button class="shr" aria-label="Share ' + U.esc(s.name) + '">📤 Share</button></div>').join('');
   }
   function saveSpot(name) {
     const ex = findSpot(S.lat, S.lon);
@@ -660,11 +685,13 @@
     cv.addEventListener('pointermove', (e) => { if (e.buttons || e.pointerType === 'touch') pickFromChart(e); });
     $('#hourSlider').addEventListener('input', (e) => setHour(+e.target.value));
     $('#searchForm').addEventListener('submit', (e) => { e.preventDefault(); search($('#searchInput').value); });
+    $('#pingBtn').onclick = pingLocation; $('#mapPing').onclick = pingLocation;
     $('#saveSpotBtn').onclick = () => { if (findSpot(S.lat, S.lon)) toast('Already in your saved spots'); else saveSpot(); };
     $('#spotSave').onclick = () => { saveSpot($('#spotName').value.trim()); $('#spotName').value = ''; };
     $('#spotList').addEventListener('click', (e) => {
       const el = e.target.closest('.spot'); if (!el) return; const s = spots.find((x) => x.id === el.dataset.id); if (!s) return;
       if (e.target.closest('.dir')) openDirections(s.lat, s.lon, s.name);
+      else if (e.target.closest('.shr')) HC.Share.shareSpot(s.name, s.lat, s.lon);
       else if (e.target.closest('.nm')) openDirections(s.lat, s.lon, s.name);
       else if (e.target.closest('.use')) { setLocation(s.lat, s.lon, s.name, { fly: true, immediate: true }); showView('forecast'); }
       else if (e.target.closest('.del')) { if (confirm('Delete “' + s.name + '”?')) { spots = spots.filter((x) => x !== s); saveSpots(); renderSpots(); updateLocUI(); } }
@@ -691,6 +718,8 @@
     // Query params: ?lat=..&lon=..&sp=..  (handy for testing / sharing)
     const q = new URLSearchParams(location.search);
     if (q.get('sp') && SP.byId[q.get('sp')]) S.species = q.get('sp');
+    const shared = HC.Share.parseSpotParam(location.search);
+    if (shared) { showShared(shared); try { history.replaceState(null, '', location.pathname + (location.hash || '')); } catch (e) { /* ignore */ } }
     if (q.get('lat') && q.get('lon')) { S.lat = +q.get('lat'); S.lon = +q.get('lon'); S.name = q.get('name') || 'Custom location'; }
     // If location permission was already granted earlier and no saved place, offer to use it silently
     loadForecast();
@@ -704,5 +733,5 @@
     }
   }
   document.addEventListener('DOMContentLoaded', init);
-  HC.app = { get mini() { return mini; }, S, get data() { return data; }, get cur() { return cur; }, setLocation, showView, setHour, gps };
+  HC.app = { toast, addSpot, get mini() { return mini; }, S, get data() { return data; }, get cur() { return cur; }, setLocation, showView, setHour, gps };
 })(window.HC = window.HC || {});
