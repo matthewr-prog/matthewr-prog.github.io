@@ -2,7 +2,7 @@
 (function (HC) {
   'use strict';
   const U = HC.Util, M = HC.Model, SP = HC.Species;
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const HOUR = 3600000;
@@ -595,6 +595,8 @@
     $$('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.view === v));
     if (v === 'map') { initMap(); setTimeout(() => { sheetH(); map.invalidateSize(); if (!mapFitted) { mapFitted = true; updateMapOverlay(); if (coneBounds) fitCone(false); else map.setView([S.lat, S.lon], 14); } }, 60); }
     if (v === 'spots') renderSpots();
+    if (v === 'regs' && HC.regs) HC.regs.show();
+    if (v === 'shop' && HC.shop) HC.shop.show();
     if (v === 'forecast' && cur) setTimeout(() => { renderChart(); renderHeat(); renderSparks(); if (mini) { mini.invalidateSize(); rebuildField(); updateMini(); } }, 30);
     history.replaceState(null, '', '#' + v);
   }
@@ -648,7 +650,7 @@
   function init() {
     bind(); renderInfo(); renderSpots(); updateLocUI();
     const v = (location.hash || '').slice(1);
-    if (['forecast', 'map', 'spots', 'info'].indexOf(v) > 0) showView(v);
+    if (['forecast', 'map', 'spots', 'regs', 'shop', 'info'].indexOf(v) > 0) showView(v);
     // Query params: ?lat=..&lon=..&sp=..  (handy for testing / sharing)
     const q = new URLSearchParams(location.search);
     if (q.get('sp') && SP.byId[q.get('sp')]) S.species = q.get('sp');
