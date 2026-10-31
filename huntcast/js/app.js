@@ -2,7 +2,7 @@
 (function (HC) {
   'use strict';
   const U = HC.Util, M = HC.Model, SP = HC.Species;
-  const VERSION = '1.2.3';
+  const VERSION = '1.2.4';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const HOUR = 3600000;
@@ -486,11 +486,16 @@
     marker = L.marker([S.lat, S.lon], { icon: PIN, draggable: true, title: 'Hunting spot' }).addTo(map);
     marker.bindPopup(() => {
       const sv = findSpot(S.lat, S.lon), nm = U.esc(sv ? sv.name : (S.name || 'Hunting spot'));
-      return '<b>' + nm + '</b><br><a href="' + dirUrl(S.lat, S.lon) + '" target="_blank" rel="noopener">🧭 Directions</a>';
+      return '<b>' + nm + '</b><br><a href="#" class="pop-dir" data-lat="' + S.lat + '" data-lon="' + S.lon + '" data-name="' + nm + '">🧭 Directions (beeline)</a>';
+    });
+    map.on('popupopen', (e) => {
+      const a = e.popup.getElement() && e.popup.getElement().querySelector('.pop-dir'); if (!a) return;
+      a.addEventListener('click', (ev) => { ev.preventDefault(); const sv = findSpot(S.lat, S.lon); map.closePopup(); openDirections(S.lat, S.lon, sv ? sv.name : (S.name || 'Hunting spot')); });
     });
     marker.on('dragend', () => { const p = marker.getLatLng(); setLocation(p.lat, p.lng, null, {}); });
     map.on('click', (e) => setLocation(e.latlng.lat, e.latlng.lng, null, {}));
     updateMapOverlay();
+    drawBeeline();
   }
   function placeMarker(fit, fly) {
     if (!map) return;
@@ -549,9 +554,30 @@
 
   /* ------------------------------------------------------------------ spots */
   function dirUrl(lat, lon) { return 'https://www.google.com/maps/dir/?api=1&destination=' + (+lat).toFixed(5) + ',' + (+lon).toFixed(5) + '&travelmode=driving'; }
+  /* Directions = Beeline: straight line from you to the spot, ignoring roads/trails/obstacles. Road route stays as a small secondary link. */
+  let beeLayer = null, beeTarget = null, beeUser = null;
+  function drawBeeline() {
+    if (!map || !beeTarget) return;
+    if (!beeLayer) beeLayer = L.layerGroup().addTo(map);
+    beeLayer.clearLayers();
+    L.circleMarker([beeTarget.lat, beeTarget.lon], { radius: 9, color: '#fff', weight: 3, fillColor: '#ff7a1a', fillOpacity: 1, interactive: false }).addTo(beeLayer);
+    if (beeUser) {
+      const a = [beeUser.lat, beeUser.lon], b = [beeTarget.lat, beeTarget.lon];
+      L.circle(a, { radius: Math.max(beeUser.acc || 0, 5), color: '#46c4c9', weight: 1, fillOpacity: 0.12, interactive: false }).addTo(beeLayer);
+      L.circleMarker(a, { radius: 7, color: '#fff', weight: 2, fillColor: '#46c4c9', fillOpacity: 1, interactive: false }).addTo(beeLayer);
+      L.polyline([a, b], { color: '#ff7a1a', weight: 4, opacity: 0.95, dashArray: '10 8', interactive: false }).addTo(beeLayer);
+    }
+  }
+  function clearBeeline() { beeTarget = null; beeUser = null; if (beeLayer) beeLayer.clearLayers(); }
   function openDirections(lat, lon, name) {
-    toast('Opening directions' + (name ? ' to ' + name : '') + '…');
-    if (!window.open(dirUrl(lat, lon), '_blank')) location.href = dirUrl(lat, lon);
+    beeTarget = { lat: +lat, lon: +lon, name: name || 'Hunting spot' }; beeUser = null;
+    HC.Beeline.open(beeTarget, {
+      roadUrl: dirUrl(lat, lon),
+      onUpdate: (u) => { beeUser = u; drawBeeline(); },
+      onMap: () => { showView('map'); setTimeout(() => { if (!map) return; drawBeeline(); const pts = [[beeTarget.lat, beeTarget.lon]]; if (beeUser) pts.push([beeUser.lat, beeUser.lon]); map.fitBounds(pts.length > 1 ? pts : [pts[0], pts[0]], { padding: [60, 60], maxZoom: 17 }); }, 200); },
+      onStop: clearBeeline
+    });
+    if (map) drawBeeline();
   }
   function findSpot(lat, lon) { return spots.find((s) => Math.abs(s.lat - lat) < 0.0015 && Math.abs(s.lon - lon) < 0.0015); }
   function renderSpots() {
@@ -639,7 +665,7 @@
     $('#spotList').addEventListener('click', (e) => {
       const el = e.target.closest('.spot'); if (!el) return; const s = spots.find((x) => x.id === el.dataset.id); if (!s) return;
       if (e.target.closest('.dir')) openDirections(s.lat, s.lon, s.name);
-      else if (e.target.closest('.nm')) { if (confirm('Get driving directions to “' + s.name + '” in Google Maps?')) openDirections(s.lat, s.lon, s.name); }
+      else if (e.target.closest('.nm')) openDirections(s.lat, s.lon, s.name);
       else if (e.target.closest('.use')) { setLocation(s.lat, s.lon, s.name, { fly: true, immediate: true }); showView('forecast'); }
       else if (e.target.closest('.del')) { if (confirm('Delete “' + s.name + '”?')) { spots = spots.filter((x) => x !== s); saveSpots(); renderSpots(); updateLocUI(); } }
       else if (e.target.closest('.ren')) { const n = prompt('Rename spot', s.name); if (n && n.trim()) { s.name = n.trim().slice(0, 60); saveSpots(); renderSpots(); } }
