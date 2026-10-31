@@ -1,5 +1,5 @@
 /* HuntCast service worker: offline app shell + opportunistic tile/forecast caching. */
-const VERSION = 'huntcast-v1.2.0';
+const VERSION = 'huntcast-v1.2.1';
 const SHELL = VERSION + '-shell';
 const TILES = 'huntcast-tiles-v1';
 const API = 'huntcast-api-v1';
