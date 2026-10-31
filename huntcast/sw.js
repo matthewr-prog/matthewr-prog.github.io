@@ -1,5 +1,5 @@
 /* HuntCast service worker: offline app shell + opportunistic tile/forecast caching. */
-const VERSION = 'huntcast-v1.2.4';
+const VERSION = 'huntcast-v1.2.5';
 const SHELL = VERSION + '-shell';
 const TILES = 'huntcast-tiles-v1';
 const API = 'huntcast-api-v1';
@@ -7,7 +7,7 @@ const DATA = 'huntcast-data-v1'; // JSON data (regs, shop, ads): network-first, 
 const DATA_FILES = ['./data/regs/index.json', './data/regs/PA.json', './data/shop.json', './data/ads.json'];
 const SHELL_FILES = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
-  './js/util.js', './js/astro.js', './js/weather.js', './js/species.js', './js/model.js', './js/ads.js', './js/regs.js', './js/shop.js', './js/beeline.js', './js/app.js',
+  './js/util.js', './js/astro.js', './js/weather.js', './js/species.js', './js/model.js', './js/ads.js', './js/regs.js', './js/shop.js', './js/share.js', './js/beeline.js', './js/app.js',
   './vendor/leaflet.js', './vendor/leaflet.css', './vendor/suncalc.js',
   './icons/icon.svg',
   './icons/icon-192.png',
