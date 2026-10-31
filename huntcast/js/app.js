@@ -2,7 +2,7 @@
 (function (HC) {
   'use strict';
   const U = HC.Util, M = HC.Model, SP = HC.Species;
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const HOUR = 3600000;
@@ -15,6 +15,7 @@
   let data = null, fetchedAt = 0, offline = false;
   let selDate = null, selHour = null, cur = null; // cur = scoreDay result for selected species/date
   let reqId = 0, scoreCache = {};
+  let PIN = null;
 
   function readJSON(k, fb) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? fb : v; } catch (e) { return fb; } }
   function save() { try { localStorage.setItem(LS_STATE, JSON.stringify({ lat: S.lat, lon: S.lon, name: S.name, species: S.species, includeNight: S.includeNight, legalMin: S.legalMin, layer: S.layer })); } catch (e) { /* ignore */ } }
@@ -118,11 +119,10 @@
     cur = dayScore(species(), selDate);
     if (!cur) return;
     if (newDay || selHour == null || selHour >= cur.hours.length) {
-      const el = cur.hours.filter((h) => h.eligible);
-      const best = (el.length ? el : cur.hours).reduce((a, b) => (b.score > a.score ? b : a));
-      selHour = cur.hours.indexOf(best);
+      const nowIdx = nowHourIdx();
+      selHour = nowIdx >= 0 ? nowIdx : bestHourIdx();
     }
-    renderBanner(); renderStrips(); renderRating(); renderChart(); renderHour(); renderAstro(); renderSparks(); renderRanking(); updateLocUI(); updateMapOverlay();
+    renderBanner(); renderStrips(); renderRating(); renderChart(); renderHour(); renderHeat(); renderAstro(); renderSparks(); renderRanking(); updateLocUI(); updateMapOverlay(); initMini(); updateMini();
   }
 
   function renderBanner() {
@@ -169,7 +169,7 @@
       return '<div class="win" style="border-left-color:' + colorFor(x.mean) + '"><div><b>' + (i === 0 ? '🏆 ' : '') + label + '</b><small>' + U.esc(x.items.reduce((a, b) => (b.score > a.score ? b : a)).why.slice(0, 3).join(' · ')) + '</small></div><span class="pill" style="background:' + colorFor(x.mean) + '">' + x.mean + '</span></div>';
     }).join('') : '<div class="muted">No standout window — activity looks low all day for this species.' + (sp.night && !S.includeNight ? ' (Night-active species: turn on “Include night”.)' : '') + '</div>';
     $('#drivers').innerHTML = d.drivers.map((x) => '<span class="drv ' + (x.pts >= 0 ? 'pos' : 'neg') + '"><b>' + (x.pts >= 0 ? '+' : '−') + Math.abs(x.pts).toFixed(0) + '</b> ' + U.esc(x.txt || x.name) + '</span>').join('');
-    $('#nightToggle').checked = S.includeNight; $('#nightToggle2').checked = S.includeNight; $('#legalSel').value = String(S.legalMin);
+    $('#nightToggle').checked = S.includeNight; $('#nightToggle2').checked = S.includeNight; $('#nightToggle3').checked = S.includeNight; $('#legalSel').value = String(S.legalMin);
   }
 
   /* ------------------------------------------------------------------ chart */
@@ -229,10 +229,30 @@
   }
 
   /* -------------------------------------------------------------- hour card */
+  let hourRaf = 0;
   function setHour(i) {
-    selHour = U.clamp(i, 0, cur.hours.length - 1);
-    renderChart(); renderHour(); renderSparks(); updateMapOverlay();
+    if (!cur) return;
+    selHour = U.clamp(Math.round(i), 0, cur.hours.length - 1);
+    if (hourRaf) return;
+    hourRaf = requestAnimationFrame(() => { hourRaf = 0; refreshHour(); });
+    setTimeout(() => { if (hourRaf) { cancelAnimationFrame(hourRaf); hourRaf = 0; refreshHour(); } }, 120); // hidden tabs never fire rAF
   }
+  function refreshHour() { if (!cur) return; renderChart(); renderHour(); renderHeat(); renderSparks(); updateMapOverlay(); updateMini(); }
+  function nowHourIdx() {
+    if (!cur || selDate !== U.dateKey(Date.now(), data.tz)) return -1;
+    const n = Date.now(); return cur.hours.findIndex((r) => n >= r.t && n < r.t + HOUR);
+  }
+  function bestHourIdx() {
+    const el = cur.hours.filter((h) => h.eligible);
+    const best = (el.length ? el : cur.hours).reduce((x, y) => (y.score > x.score ? y : x));
+    return cur.hours.indexOf(best);
+  }
+  const feelsLike = (T, v, rh) => {
+    if (T <= 50 && v > 3) { const p = Math.pow(v, 0.16); return 35.74 + 0.6215 * T - 35.75 * p + 0.4275 * T * p; }
+    if (T >= 80 && rh >= 40) return -42.379 + 2.04901523 * T + 10.14333127 * rh - 0.22475541 * T * rh - 0.00683783 * T * T - 0.05481717 * rh * rh + 0.00122874 * T * T * rh + 0.00085282 * T * rh * rh - 0.00000199 * T * T * rh * rh;
+    return T;
+  };
+  const windArrow = (dir) => '<span class="arw" style="transform:rotate(' + ((dir + 180) % 360) + 'deg)">↑</span>';
   const arrow = (d) => d <= -0.5 ? '↘ falling' : d >= 0.5 ? '↗ rising' : '→ steady';
   function renderHour() {
     const r = cur.hours[selHour], h = r.h, tz = data.tz;
@@ -240,12 +260,20 @@
     $('#hourSub').textContent = M.ratingLabel(r.score) + ' · ' + (r.legal ? 'legal light' : 'outside legal light') + ' · sun ' + Math.round(r.sunAlt) + '°';
     const hs = $('#hourScore'); hs.textContent = r.score; hs.style.background = colorFor(r.score);
     $('#hourWhy').innerHTML = r.why.map((t) => '<span>' + U.esc(t) + '</span>').join('');
+    const feels = feelsLike(h.temp, h.wind, h.rh), hrEnd = r.t + HOUR, A = cur.astro;
+    const sunTxt = r.sunAlt > 0 ? '☀️ Day · ' + Math.round(r.sunAlt) + '°' : r.sunAlt > -6 ? '🌅 Twilight' : '🌙 Night';
+    const sunEv = (A.sunrise != null && A.sunrise >= r.t && A.sunrise < hrEnd) ? 'Sunrise ' + U.time(A.sunrise, tz) : (A.sunset != null && A.sunset >= r.t && A.sunset < hrEnd) ? 'Sunset ' + U.time(A.sunset, tz) : '';
+    const inP = (m) => m.t - m.half < hrEnd && m.t + m.half > r.t;
+    const maj = A.majors.some(inP), mnr = A.minors.some(inP);
+    const solTxt = maj ? '🔵 Major window' : mnr ? '🔹 Minor window' : 'None this hour';
     const wx = [
-      ['Temp', Math.round(h.temp) + '°F'], ['Wind', Math.round(h.wind) + ' mph ' + U.compass16(h.dir)], ['Gusts', Math.round(h.gust) + ' mph'],
+      ['Temp / feels', Math.round(h.temp) + '° / ' + Math.round(feels) + '°F'], ['Wind', windArrow(h.dir) + ' ' + Math.round(h.wind) + ' mph ' + U.compass16(h.dir)], ['Gusts', Math.round(h.gust) + ' mph'],
       ['Pressure', U.hpaToInHg(h.press).toFixed(2) + ' inHg'], ['3 h trend', arrow(h.d3)], ['Humidity', Math.round(h.rh) + '%'],
-      ['Cloud', Math.round(h.cloud) + '%'], ['Precip', U.mmToIn(h.precip).toFixed(2) + ' in · ' + Math.round(h.prob) + '%'], ['Visibility', Math.min(U.mToMi(h.vis), 15).toFixed(h.vis > 15000 ? 0 : 1) + (h.vis > 24000 ? '+' : '') + ' mi']
+      ['Precip chance', Math.round(h.prob) + '% · ' + U.mmToIn(h.precip).toFixed(2) + ' in'], ['Cloud cover', Math.round(h.cloud) + '%'], ['Visibility', Math.min(U.mToMi(h.vis), 15).toFixed(h.vis > 15000 ? 0 : 1) + (h.vis > 24000 ? '+' : '') + ' mi'],
+      ['Sun', sunTxt + (sunEv ? '<br><small>' + sunEv + '</small>' : '')], ['Shooting light', r.legal ? '✅ Legal light' : '⛔ Outside legal'], ['Solunar · ' + A.phaseIcon, solTxt]
     ];
     $('#wxGrid').innerHTML = wx.map((x) => '<div class="wx"><small>' + x[0] + '</small><b>' + x[1] + '</b></div>').join('');
+    $('#hourLbl').textContent = M.ratingLabel(r.score); $('#hourLbl').style.color = colorFor(r.score);
     drawCompass(h);
     const to = (h.dir + 180) % 360;
     $('#scentText').innerHTML = '🌬️ Wind from <b>' + U.compass16(h.dir) + '</b> at ' + Math.round(h.wind) + ' mph.<br>Your scent drifts toward <b>' + U.compass16(to) + '</b>.<br><span class="muted">Set up with the wind in your face — game approaching from the ' + U.compass16(h.dir) + ' side can’t smell you.' + scentExtra(h) + '</span>';
@@ -257,6 +285,7 @@
     $('#sheetHour').textContent = U.time(r.t, tz); $('#sheetScore').textContent = r.score; $('#sheetScore').style.background = colorFor(r.score);
     $('#sheetSpecies').textContent = species().emoji + ' ' + species().name;
     const sl = $('#hourSlider'); sl.max = cur.hours.length - 1; sl.value = selHour;
+    const ss = $('#scrubSlider'); ss.max = cur.hours.length - 1; ss.value = selHour;
   }
   function scentExtra(h) {
     const bits = [];
@@ -339,11 +368,110 @@
     $('#ranking').innerHTML = rows.map((x) => '<button class="rk ' + (x.s.id === S.species ? 'sel' : '') + '" data-sp="' + x.s.id + '"><span style="font-size:1.4rem">' + x.s.emoji + '</span><span>' + U.esc(x.s.name) + '</span><span class="bar"><i style="width:' + x.r.daily.score + '%;background:' + colorFor(x.r.daily.score) + '"></i></span><b>' + x.r.daily.score + '</b></button>').join('');
   }
 
+
+  /* ------------------------------------------------------- hour scrubber */
+  const THUMB = 40;
+  function renderHeat() {
+    if (!cur) return;
+    const cv = $('#heat'); if (!cv) return;
+    const W = cv.clientWidth || 360, H = 72, dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const hrs = cur.hours, n = hrs.length, pad = THUMB / 2, step = n > 1 ? (W - 2 * pad) / (n - 1) : W, top = 16, bh = 36, base = top + bh;
+    const cx = (i) => pad + i * step, xT = (t) => cx((t - hrs[0].t) / HOUR);
+    g.fillStyle = '#121a10'; roundRect(g, 0, top - 4, W, bh + 8, 10); g.fill();
+    // bars
+    hrs.forEach((r, i) => {
+      const x = cx(i) - step / 2 + 1, w = Math.max(step - 2, 2), hh = Math.max(4, bh * r.score / 100);
+      const a = r.sunAlt; if (a < 0) { g.fillStyle = 'rgba(40,60,130,' + (a < -6 ? 0.30 : 0.15) + ')'; g.fillRect(x - 1, top - 4, w + 2, bh + 8); }
+      g.globalAlpha = r.eligible ? 1 : 0.35; g.fillStyle = colorFor(r.score); roundRect(g, x, base - hh, w, hh, 2.5); g.fill(); g.globalAlpha = 1;
+    });
+    // sunrise / sunset
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.font = '11px system-ui';
+    [[cur.astro.sunrise, '☀↑'], [cur.astro.sunset, '☀↓']].forEach(([t, lab]) => {
+      if (t == null) return; const x = xT(t); if (x < 0 || x > W) return;
+      g.strokeStyle = '#ffd36b'; g.lineWidth = 1.4; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(x, top - 3); g.lineTo(x, base + 4); g.stroke(); g.setLineDash([]);
+      g.fillStyle = '#ffd36b'; g.fillText(lab, Math.min(Math.max(x, 16), W - 16), 11);
+    });
+    // now
+    const nw = Date.now(); if (nw >= hrs[0].t && nw < hrs[0].t + n * HOUR) { const x = xT(nw); g.fillStyle = '#ff7a1a'; g.fillRect(x - 1, top - 4, 2, bh + 8); }
+    // ticks + labels (12a 6a 12p 6p)
+    g.fillStyle = '#9aa88b'; g.font = '11px system-ui'; g.strokeStyle = '#3a4a33'; g.lineWidth = 1;
+    hrs.forEach((r, i) => {
+      const L = U.hourLabel(r.t, data.tz), mm = /^(\d+)(a|p)/.exec(L), hr = mm ? +mm[1] : -1, big = hr === 12 || hr === 6;
+      g.beginPath(); g.moveTo(cx(i), base + 6); g.lineTo(cx(i), base + (big ? 12 : 9)); g.stroke();
+      if (big && mm) g.fillText(mm[1] + mm[2], cx(i), H - 3);
+    });
+  }
+
+  /* ---------------------------------------------------------- mini map */
+  let mini = null, miniPin = null, miniCone = null, miniField = null, miniArrow = null, miniSpot = null, miniLayerKey = 'sat', fieldEls = [], miniBase = {};
+  function initMini() {
+    if (mini || !window.L || !$('#miniMap')) return;
+    mini = L.map('miniMap', { zoomControl: false, dragging: false, touchZoom: false, doubleClickZoom: false, scrollWheelZoom: false, boxZoom: false, keyboard: false, tap: false, attributionControl: true, zoomSnap: 1 }).setView([S.lat, S.lon], 14);
+    mini.attributionControl.setPrefix(false);
+    miniBase = {
+      sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Imagery © Esri, Maxar' }),
+      topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, subdomains: 'abc', attribution: '© OpenTopoMap, OSM' }),
+      osm: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' })
+    };
+    miniBase[miniLayerKey].addTo(mini);
+    L.control.zoom({ position: 'topright' }).addTo(mini);
+    miniField = L.layerGroup().addTo(mini); miniCone = L.layerGroup().addTo(mini);
+    miniSpot = L.marker([S.lat, S.lon], { icon: getPin(), interactive: false, keyboard: false }).addTo(mini);
+    mini.on('click', () => showView('map'));
+    mini.on('zoomend resize', () => { rebuildField(); updateMini(); });
+    $('#miniLayers').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-l]'); if (!b || b.dataset.l === miniLayerKey) return;
+      mini.removeLayer(miniBase[miniLayerKey]); miniLayerKey = b.dataset.l; miniBase[miniLayerKey].addTo(mini); miniBase[miniLayerKey].bringToBack();
+      $$('#miniLayers button').forEach((x) => x.classList.toggle('sel', x === b));
+    });
+    rebuildField();
+  }
+  function rebuildField() {
+    if (!mini) return;
+    miniField.clearLayers(); fieldEls = [];
+    const sz = mini.getSize(), cols = 5, rows = 4;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const pt = L.point((c + 0.5) * sz.x / cols, (r + 0.5) * sz.y / rows);
+      if (Math.hypot(pt.x - sz.x / 2, pt.y - sz.y / 2) < 46) continue;
+      const mk = L.marker(mini.containerPointToLatLng(pt), { interactive: false, keyboard: false, icon: L.divIcon({ className: 'wf-icon', html: '<div class="wf"><svg viewBox="-12 -12 24 24" width="24" height="24"><path d="M0,-10 L6,2 L1.5,0 L1.5,10 L-1.5,10 L-1.5,0 L-6,2 Z" fill="#fff" stroke="#0007" stroke-width="1"/></svg></div>', iconSize: [24, 24], iconAnchor: [12, 12] }) }).addTo(miniField);
+      fieldEls.push(mk);
+    }
+  }
+  function updateMini() {
+    if (!mini || !cur) return;
+    const r = cur.hours[selHour], h = r.h, to = (h.dir + 180) % 360, v = h.wind, tz = data.tz;
+    const ll = L.latLng(S.lat, S.lon);
+    if (mini.getCenter().distanceTo(ll) > 5) mini.setView(ll, mini.getZoom(), { animate: false });
+    miniSpot.setLatLng(ll);
+    // scent cone
+    miniCone.clearLayers();
+    const len = v < 2 ? 120 : U.clamp(100 + 55 * v, 150, 1100), half = (v < 3 ? 60 : v < 6 ? 35 : 22) + (h.gust - v > 10 ? 8 : 0);
+    const poly = (rad, ang, op, wt) => { const pts = [[S.lat, S.lon]]; for (let x = -ang; x <= ang; x += 4) pts.push(U.dest(S.lat, S.lon, to + x, rad)); return L.polygon(pts, { color: '#ff7a1a', weight: wt, fillColor: '#ff7a1a', fillOpacity: op, interactive: false }); };
+    if (v < 2) L.circle(ll, { radius: len, color: '#ff7a1a', weight: 2, fillOpacity: 0.25, interactive: false }).addTo(miniCone);
+    else { poly(len, half + 12, 0.16, 1).addTo(miniCone); poly(len * 0.55, half, 0.32, 2).addTo(miniCone); }
+    // big wind arrow
+    const aLen = v < 2 ? 0 : U.clamp(len * 0.7, 180, 650);
+    if (aLen) {
+      const tip = U.dest(S.lat, S.lon, to, aLen);
+      L.polyline([ll, tip], { color: '#fff', weight: 5, opacity: 0.95, interactive: false }).addTo(miniCone);
+      L.marker(tip, { interactive: false, keyboard: false, icon: L.divIcon({ className: 'wf-icon', html: '<div class="wbig" style="transform:rotate(' + to + 'deg)"><svg viewBox="-20 -20 40 40" width="44" height="44"><path d="M0,-18 L15,6 L0,0 L-15,6 Z" fill="#fff" stroke="#ff7a1a" stroke-width="3" stroke-linejoin="round"/></svg></div>', iconSize: [44, 44], iconAnchor: [22, 22] }) }).addTo(miniCone);
+    }
+    // field arrows follow direction and speed
+    const sc = U.clamp(0.55 + v / 14, 0.55, 1.5), op = v < 2 ? 0.25 : U.clamp(0.45 + v / 25, 0.45, 0.95);
+    fieldEls.forEach((mk) => { const el = mk.getElement(); if (!el) return; const d = el.firstChild; d.style.transform = 'rotate(' + to + 'deg) scale(' + sc.toFixed(2) + ')'; d.style.opacity = op; });
+    // label
+    $('#miniWx').innerHTML = '<span class="mw-arr" style="transform:rotate(' + (to - 90) + 'deg)">➤</span><span><b>' + (v < 1 ? 'Calm' : Math.round(v) + ' mph') + '</b> from <b>' + U.compass16(h.dir) + '</b>' + (v < 1 ? '' : ' → blowing ' + U.compass16(to)) + '<br><small>gusts ' + Math.round(h.gust) + ' mph · scent drifts ' + U.compass16(to) + '</small></span>';
+    $('#miniHour').textContent = '· ' + U.time(r.t, tz) + ' · score ' + r.score;
+  }
+
   /* -------------------------------------------------------------------- map */
   let map = null, marker = null, coneLayer = null, layersCtl = null;
+  function getPin() { return PIN || (PIN = L.icon({ iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAFgUlEQVR4Aa1XA5BjWRTN2oW17d3YaZtr2962HUzbDNpjszW24mRt28p47v7zq/bXZtrp/lWnXr337j3nPCe85NcypgSFdugCpW5YoDAMRaIMqRi6aKq5E3YqDQO3qAwjVWrD8Ncq/RBpykd8oZUb/kaJutow8r1aP9II0WmLKLIsJyv1w/kqw9Ch2MYdB++12Onxee/QMwvf4/Dk/Lfp/i4nxTXtOoQ4pW5Aj7wpici1A9erdAN2OH64x8OSP9j3Ft3b7aWkTg/Fm91siTra0f9on5sQr9INejH6CUUUpavjFNq1B+Oadhxmnfa8RfEmN8VNAsQhPqF55xHkMzz3jSmChWU6f7/XZKNH+9+hBLOHYozuKQPxyMPUKkrX/K0uWnfFaJGS1QPRtZsOPtr3NsW0uyh6NNCOkU3Yz+bXbT3I8G3xE5EXLXtCXbbqwCO9zPQYPRTZ5vIDXD7U+w7rFDEoUUf7ibHIR4y6bLVPXrz8JVZEql13trxwue/uDivd3fkWRbS6/IA2bID4uk0UpF1N8qLlbBlXs4Ee7HLTfV1j54APvODnSfOWBqtKVvjgLKzF5YdEk5ewRkGlK0i33Eofffc7HT56jD7/6U+qH3Cx7SBLNntH5YIPvODnyfIXZYRVDPqgHtLs5ABHD3YzLuespb7t79FY34DjMwrVrcTuwlT55YMPvOBnRrJ4VXTdNnYug5ucHLBjEpt30701A3Ts+HEa73u6dT3FNWwflY86eMHPk+Yu+i6pzUpRrW7SNDg5JHR4KapmM5Wv2E8Tfcb1HoqqHMHU+uWDD7zg54mz5/2BSnizi9T1Dg4QQXLToGNCkb6tb1NU+QAlGr1++eADrzhn/u8Q2YZhQVlZ5+CAOtqfbhmaUCS1ezNFVm2imDbPmPng5wmz+gwh+oHDce0eUtQ6OGDIyR0uUhUsoO3vfDmmgOezH0mZN59x7MBi++WDL1g/eEiU3avlidO671bkLfwbw5XV2P8Pzo0ydy4t2/0eu33xYSOMOD8hTf4CrBtGMSoXfPLchX+J0ruSePw3LZeK0juPJbYzrhkH0io7B3k164hiGvawhOKMLkrQLyVpZg8rHFW7E2uHOL888IBPlNZ1FPzstSJM694fWr6RwpvcJK60+0HCILTBzZLFNdtAzJaohze60T8qBzyh5ZuOg5e7uwQppofEmf2++DYvmySqGBuKaicF1blQjhuHdvCIMvp8whTTfZzI7RldpwtSzL+F1+wkdZ2TBOW2gIF88PBTzD/gpeREAMEbxnJcaJHNHrpzji0gQCS6hdkEeYt9DF/2qPcEC8RM28Hwmr3sdNyht00byAut2k3gufWNtgtOEOFGUwcXWNDbdNbpgBGxEvKkOQsxivJx33iow0Vw5S6SVTrpVq11ysA2Rp7gTfPfktc6zhtXBBC+adRLshf6sG2RfHPZ5EAc4sVZ83yCN00Fk/4kggu40ZTvIEm5g24qtU4KjBrx/BTTH8ifVASAG7gKrnWxJDcU7x8X6Ecczhm3o6YicvsLXWfh3Ch1W0k8x0nXF+0fFxgt4phz8QvypiwCCFKMqXCnqXExjq10beH+UUA7+nG6mdG/Pu0f3LgFcGrl2s0kNNjpmoJ9o4B29CMO8dMT4Q5ox8uitF6fqsrJOr8qnwNbRzv6hSnG5wP+64C7h9lp30hKNtKdWjtdkbuPA19nJ7Tz3zR/ibgARbhb4AlhavcBebmTHcFl2fvYEnW0ox9xMxKBS8btJ+KiEbq9zA4RthQXDhPa0T9TEe69gWupwc6uBUphquXgf+/FrIjweHQS4/pduMe5ERUMHUd9xv8ZR98CxkS4F2n3EUrUZ10EYNw7BWm9x1GiPssi3GgiGRDKWRYZfXlON+dfNbM+GgIwYdwAAAAASUVORK5CYII=', iconRetinaUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABSCAMAAAAhFXfZAAAC91BMVEVMaXEzeak2f7I4g7g3g7cua5gzeKg8hJo3grY4g7c3grU0gLI2frE0daAubJc2gbQwd6QzeKk2gLMtd5sxdKIua5g1frA2f7IydaM0e6w2fq41fK01eqo3grgubJgta5cxdKI1f7AydaQydaMxc6EubJgvbJkwcZ4ubZkwcJwubZgubJcydqUydKIxapgubJctbJcubZcubJcvbJYubJcvbZkubJctbJctbZcubJg2f7AubJcrbZcubJcubJcua5g3grY0fq8ubJcubJdEkdEwhsw6i88vhswuhcsuhMtBjMgthMsrg8srgss6is8qgcs8i9A9iMYtg8spgcoogMo7hcMngMonf8olfso4gr8kfck5iM8jfMk4iM8he8k1fro7itAgesk2hs8eecgzfLcofssdeMg0hc4cd8g2hcsxeLQbdsgZdcgxeLImfcszhM0vda4xgckzhM4xg84wf8Yxgs4udKsvfcQucqhUndROmdM1fK0wcZ8vb5w0eqpQm9MzeKhXoNVcpdYydKNWn9VZotVKltJFjsIwcJ1Rms9OlslLmtH///8+kc9epdYzd6dbo9VHkMM2f7FHmNBClM8ydqVcpNY9hro3gLM9hLczealQmcw3fa46f7A8gLMxc6I3eagyc6FIldJMl9JSnNRSntNNl9JPnNJFi75UnM9ZodVKksg8kM45jc09e6ZHltFBk883gbRBh7pDk9EwcaBzn784g7dKkcY2i81Om9M7j85Llc81is09g7Q4grY/j9A0eqxKmdFFltBEjcXf6fFImdBCiLxJl9FGlNFBi78yiMxVndEvbpo6js74+vx+psPP3+o/ks5HkcpGmNCjwdZCkNDM3ehYoNJEls+lxNkxh8xHks0+jdC1zd5Lg6r+/v/H2ufz9/o3jM3t8/edvdM/k89Th61OiLBSjbZklbaTt9BfptdjmL1AicBHj8hGk9FAgK1dkLNTjLRekrdClc/k7fM0icy0y9tgp9c4jc2NtM9Dlc8zicxeXZn3AAAAQ3RSTlMAHDdTb4yPA+LtnEQmC4L2EmHqB7XA0d0sr478x4/Yd5i1zOfyPkf1sLVq4Nh3FvjxopQ2/STNuFzUwFIwxKaejILpIBEV9wAABhVJREFUeF6s1NdyFEcY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', shadowUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAQAAAACach9AAACMUlEQVR4Ae3ShY7jQBAE0Aoz/f9/HTMzhg1zrdKUrJbdx+Kd2nD8VNudfsL/Th///dyQN2TH6f3y/BGpC379rV+S+qqetBOxImNQXL8JCAr2V4iMQXHGNJxeCfZXhSRBcQMfvkOWUdtfzlLgAENmZDcmo2TVmt8OSM2eXxBp3DjHSMFutqS7SbmemzBiR+xpKCNUIRkdkkYxhAkyGoBvyQFEJEefwSmmvBfJuJ6aKqKWnAkvGZOaZXTUgFqYULWNSHUckZuR1HIIimUExutRxwzOLROIG4vKmCKQt364mIlhSyzAf1m9lHZHJZrlAOMMztRRiKimp/rpdJDc9Awry5xTZCte7FHtuS8wJgeYGrex28xNTd086Dik7vUMscQOa8y4DoGtCCSkAKlNwpgNtphjrC6MIHUkR6YWxxs6Sc5xqn222mmCRFzIt8lEdKx+ikCtg91qS2WpwVfBelJCiQJwvzixfI9cxZQWgiSJelKnwBElKYtDOb2MFbhmUigbReQBV0Cg4+qMXSxXSyGUn4UbF8l+7qdSGnTC0XLCmahIgUHLhLOhpVCtw4CzYXvLQWQbJNmxoCsOKAxSgBJno75avolkRw8iIAFcsdc02e9iyCd8tHwmeSSoKTowIgvscSGZUOA7PuCN5b2BX9mQM7S0wYhMNU74zgsPBj3HU7wguAfnxxjFQGBE6pwN+GjME9zHY7zGp8wVxMShYX9NXvEWD3HbwJf4giO4CFIQxXScH1/TM+04kkBiAAAAAElFTkSuQmCC', iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], tooltipAnchor: [16, -28], shadowSize: [41, 41] })); }
   function initMap() {
     if (map) return;
-    const PIN = L.icon({ iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAFgUlEQVR4Aa1XA5BjWRTN2oW17d3YaZtr2962HUzbDNpjszW24mRt28p47v7zq/bXZtrp/lWnXr337j3nPCe85NcypgSFdugCpW5YoDAMRaIMqRi6aKq5E3YqDQO3qAwjVWrD8Ncq/RBpykd8oZUb/kaJutow8r1aP9II0WmLKLIsJyv1w/kqw9Ch2MYdB++12Onxee/QMwvf4/Dk/Lfp/i4nxTXtOoQ4pW5Aj7wpici1A9erdAN2OH64x8OSP9j3Ft3b7aWkTg/Fm91siTra0f9on5sQr9INejH6CUUUpavjFNq1B+Oadhxmnfa8RfEmN8VNAsQhPqF55xHkMzz3jSmChWU6f7/XZKNH+9+hBLOHYozuKQPxyMPUKkrX/K0uWnfFaJGS1QPRtZsOPtr3NsW0uyh6NNCOkU3Yz+bXbT3I8G3xE5EXLXtCXbbqwCO9zPQYPRTZ5vIDXD7U+w7rFDEoUUf7ibHIR4y6bLVPXrz8JVZEql13trxwue/uDivd3fkWRbS6/IA2bID4uk0UpF1N8qLlbBlXs4Ee7HLTfV1j54APvODnSfOWBqtKVvjgLKzF5YdEk5ewRkGlK0i33Eofffc7HT56jD7/6U+qH3Cx7SBLNntH5YIPvODnyfIXZYRVDPqgHtLs5ABHD3YzLuespb7t79FY34DjMwrVrcTuwlT55YMPvOBnRrJ4VXTdNnYug5ucHLBjEpt30701A3Ts+HEa73u6dT3FNWwflY86eMHPk+Yu+i6pzUpRrW7SNDg5JHR4KapmM5Wv2E8Tfcb1HoqqHMHU+uWDD7zg54mz5/2BSnizi9T1Dg4QQXLToGNCkb6tb1NU+QAlGr1++eADrzhn/u8Q2YZhQVlZ5+CAOtqfbhmaUCS1ezNFVm2imDbPmPng5wmz+gwh+oHDce0eUtQ6OGDIyR0uUhUsoO3vfDmmgOezH0mZN59x7MBi++WDL1g/eEiU3avlidO671bkLfwbw5XV2P8Pzo0ydy4t2/0eu33xYSOMOD8hTf4CrBtGMSoXfPLchX+J0ruSePw3LZeK0juPJbYzrhkH0io7B3k164hiGvawhOKMLkrQLyVpZg8rHFW7E2uHOL888IBPlNZ1FPzstSJM694fWr6RwpvcJK60+0HCILTBzZLFNdtAzJaohze60T8qBzyh5ZuOg5e7uwQppofEmf2++DYvmySqGBuKaicF1blQjhuHdvCIMvp8whTTfZzI7RldpwtSzL+F1+wkdZ2TBOW2gIF88PBTzD/gpeREAMEbxnJcaJHNHrpzji0gQCS6hdkEeYt9DF/2qPcEC8RM28Hwmr3sdNyht00byAut2k3gufWNtgtOEOFGUwcXWNDbdNbpgBGxEvKkOQsxivJx33iow0Vw5S6SVTrpVq11ysA2Rp7gTfPfktc6zhtXBBC+adRLshf6sG2RfHPZ5EAc4sVZ83yCN00Fk/4kggu40ZTvIEm5g24qtU4KjBrx/BTTH8ifVASAG7gKrnWxJDcU7x8X6Ecczhm3o6YicvsLXWfh3Ch1W0k8x0nXF+0fFxgt4phz8QvypiwCCFKMqXCnqXExjq10beH+UUA7+nG6mdG/Pu0f3LgFcGrl2s0kNNjpmoJ9o4B29CMO8dMT4Q5ox8uitF6fqsrJOr8qnwNbRzv6hSnG5wP+64C7h9lp30hKNtKdWjtdkbuPA19nJ7Tz3zR/ibgARbhb4AlhavcBebmTHcFl2fvYEnW0ox9xMxKBS8btJ+KiEbq9zA4RthQXDhPa0T9TEe69gWupwc6uBUphquXgf+/FrIjweHQS4/pduMe5ERUMHUd9xv8ZR98CxkS4F2n3EUrUZ10EYNw7BWm9x1GiPssi3GgiGRDKWRYZfXlON+dfNbM+GgIwYdwAAAAASUVORK5CYII=', iconRetinaUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABSCAMAAAAhFXfZAAAC91BMVEVMaXEzeak2f7I4g7g3g7cua5gzeKg8hJo3grY4g7c3grU0gLI2frE0daAubJc2gbQwd6QzeKk2gLMtd5sxdKIua5g1frA2f7IydaM0e6w2fq41fK01eqo3grgubJgta5cxdKI1f7AydaQydaMxc6EubJgvbJkwcZ4ubZkwcJwubZgubJcydqUydKIxapgubJctbJcubZcubJcvbJYubJcvbZkubJctbJctbZcubJg2f7AubJcrbZcubJcubJcua5g3grY0fq8ubJcubJdEkdEwhsw6i88vhswuhcsuhMtBjMgthMsrg8srgss6is8qgcs8i9A9iMYtg8spgcoogMo7hcMngMonf8olfso4gr8kfck5iM8jfMk4iM8he8k1fro7itAgesk2hs8eecgzfLcofssdeMg0hc4cd8g2hcsxeLQbdsgZdcgxeLImfcszhM0vda4xgckzhM4xg84wf8Yxgs4udKsvfcQucqhUndROmdM1fK0wcZ8vb5w0eqpQm9MzeKhXoNVcpdYydKNWn9VZotVKltJFjsIwcJ1Rms9OlslLmtH///8+kc9epdYzd6dbo9VHkMM2f7FHmNBClM8ydqVcpNY9hro3gLM9hLczealQmcw3fa46f7A8gLMxc6I3eagyc6FIldJMl9JSnNRSntNNl9JPnNJFi75UnM9ZodVKksg8kM45jc09e6ZHltFBk883gbRBh7pDk9EwcaBzn784g7dKkcY2i81Om9M7j85Llc81is09g7Q4grY/j9A0eqxKmdFFltBEjcXf6fFImdBCiLxJl9FGlNFBi78yiMxVndEvbpo6js74+vx+psPP3+o/ks5HkcpGmNCjwdZCkNDM3ehYoNJEls+lxNkxh8xHks0+jdC1zd5Lg6r+/v/H2ufz9/o3jM3t8/edvdM/k89Th61OiLBSjbZklbaTt9BfptdjmL1AicBHj8hGk9FAgK1dkLNTjLRekrdClc/k7fM0icy0y9tgp9c4jc2NtM9Dlc8zicxeXZn3AAAAQ3RSTlMAHDdTb4yPA+LtnEQmC4L2EmHqB7XA0d0sr478x4/Yd5i1zOfyPkf1sLVq4Nh3FvjxopQ2/STNuFzUwFIwxKaejILpIBEV9wAABhVJREFUeF6s1NdyFEcY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', shadowUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAQAAAACach9AAACMUlEQVR4Ae3ShY7jQBAE0Aoz/f9/HTMzhg1zrdKUrJbdx+Kd2nD8VNudfsL/Th///dyQN2TH6f3y/BGpC379rV+S+qqetBOxImNQXL8JCAr2V4iMQXHGNJxeCfZXhSRBcQMfvkOWUdtfzlLgAENmZDcmo2TVmt8OSM2eXxBp3DjHSMFutqS7SbmemzBiR+xpKCNUIRkdkkYxhAkyGoBvyQFEJEefwSmmvBfJuJ6aKqKWnAkvGZOaZXTUgFqYULWNSHUckZuR1HIIimUExutRxwzOLROIG4vKmCKQt364mIlhSyzAf1m9lHZHJZrlAOMMztRRiKimp/rpdJDc9Awry5xTZCte7FHtuS8wJgeYGrex28xNTd086Dik7vUMscQOa8y4DoGtCCSkAKlNwpgNtphjrC6MIHUkR6YWxxs6Sc5xqn222mmCRFzIt8lEdKx+ikCtg91qS2WpwVfBelJCiQJwvzixfI9cxZQWgiSJelKnwBElKYtDOb2MFbhmUigbReQBV0Cg4+qMXSxXSyGUn4UbF8l+7qdSGnTC0XLCmahIgUHLhLOhpVCtw4CzYXvLQWQbJNmxoCsOKAxSgBJno75avolkRw8iIAFcsdc02e9iyCd8tHwmeSSoKTowIgvscSGZUOA7PuCN5b2BX9mQM7S0wYhMNU74zgsPBj3HU7wguAfnxxjFQGBE6pwN+GjME9zHY7zGp8wVxMShYX9NXvEWD3HbwJf4giO4CFIQxXScH1/TM+04kkBiAAAAAElFTkSuQmCC', iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], tooltipAnchor: [16, -28], shadowSize: [41, 41] });
+    PIN = getPin();
     map = L.map('map', { zoomControl: false, tap: true }).setView([S.lat, S.lon], 12);
     const base = {
       'OpenStreetMap': L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }),
@@ -467,7 +595,7 @@
     $$('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.view === v));
     if (v === 'map') { initMap(); setTimeout(() => { sheetH(); map.invalidateSize(); if (!mapFitted) { mapFitted = true; updateMapOverlay(); if (coneBounds) fitCone(false); else map.setView([S.lat, S.lon], 14); } }, 60); }
     if (v === 'spots') renderSpots();
-    if (v === 'forecast' && cur) setTimeout(() => { renderChart(); renderSparks(); }, 30);
+    if (v === 'forecast' && cur) setTimeout(() => { renderChart(); renderHeat(); renderSparks(); if (mini) { mini.invalidateSize(); rebuildField(); updateMini(); } }, 30);
     history.replaceState(null, '', '#' + v);
   }
   function sheetH() { const s = $('#mapSheet'); document.documentElement.style.setProperty('--sheet-h', s.offsetHeight + 'px'); }
@@ -482,7 +610,13 @@
     const pickSp = (e) => { const b = e.target.closest('[data-sp]'); if (!b) return; S.species = b.dataset.sp; save(); renderAll(false); if (e.currentTarget.id === 'ranking') window.scrollTo(0, 0), $('#view-forecast').scrollTo({ top: 0, behavior: 'smooth' }); };
     $('#speciesStrip').addEventListener('click', pickSp); $('#ranking').addEventListener('click', pickSp);
     const night = (v) => { S.includeNight = v; save(); scoreCache = {}; renderAll(false); };
-    $('#nightToggle').onchange = (e) => night(e.target.checked); $('#nightToggle2').onchange = (e) => night(e.target.checked);
+    $('#nightToggle').onchange = (e) => night(e.target.checked); $('#nightToggle2').onchange = (e) => night(e.target.checked); $('#nightToggle3').onchange = (e) => night(e.target.checked);
+    $('#scrubSlider').addEventListener('input', (e) => setHour(+e.target.value));
+    $('#hPrev').onclick = () => setHour(selHour - 1); $('#hNext').onclick = () => setHour(selHour + 1);
+    $('#hBest').onclick = () => { if (cur) setHour(bestHourIdx()); };
+    $('#hNow').onclick = () => { if (!cur) return; const i = nowHourIdx(); if (i >= 0) setHour(i); else toast('“Now” only applies to today — pick today’s date.'); };
+    $('#miniExpand').onclick = () => showView('map');
+    window.addEventListener('resize', () => { if (cur && $('#view-forecast').classList.contains('active')) { renderHeat(); if (mini) { mini.invalidateSize(); } } });
     $('#legalSel').onchange = (e) => { S.legalMin = +e.target.value; save(); scoreCache = {}; renderAll(false); };
     const cv = $('#chart');
     cv.addEventListener('pointerdown', (e) => { cv.setPointerCapture(e.pointerId); pickFromChart(e); });
@@ -526,5 +660,5 @@
     }
   }
   document.addEventListener('DOMContentLoaded', init);
-  HC.app = { S, get data() { return data; }, get cur() { return cur; }, setLocation, showView, setHour, gps };
+  HC.app = { get mini() { return mini; }, S, get data() { return data; }, get cur() { return cur; }, setLocation, showView, setHour, gps };
 })(window.HC = window.HC || {});
