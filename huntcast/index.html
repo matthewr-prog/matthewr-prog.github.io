@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HuntCast — hunting activity forecast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121a10">
+<meta name="description" content="Hour-by-hour hunting activity forecast using weather, pressure, sun, moon and season. Free, offline-capable, no account.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">◎</span><b>Hunt</b>Cast</div>
+  <button id="locChip" class="chip loc" aria-label="Change location"><span id="locName">Erie, PA</span> <small id="locCoord"></small></button>
+  <button id="refreshBtn" class="icon-btn" aria-label="Refresh forecast">⟳</button>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<main>
+  <!-- ===================== FORECAST ===================== -->
+  <section id="view-forecast" class="view active">
+    <div class="row-between pad-x">
+      <div id="dateTitle" class="date-title">Today</div>
+      <button id="gpsBtn" class="btn small">📍 Use my GPS</button>
+    </div>
+    <div id="dateStrip" class="strip dates" aria-label="Pick a date"></div>
+    <div id="speciesStrip" class="strip species" aria-label="Pick a species"></div>
+
+    <div id="loading" class="card center" hidden>Loading forecast…</div>
+    <div id="errorBox" class="card err" hidden></div>
+
+    <div id="forecastBody">
+      <article class="card rating-card">
+        <div class="rating-ring" id="ratingRing"><b id="ratingNum">–</b><small>/100</small></div>
+        <div class="rating-info">
+          <div class="rating-label" id="ratingLabel">—</div>
+          <div class="stars" id="ratingStars"></div>
+          <div class="muted" id="ratingSub"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3>Best windows <small id="windowNote" class="muted"></small></h3>
+        <div id="windows" class="windows"></div>
+        <div id="drivers" class="drivers"></div>
+      </article>
+
+      <article class="card">
+        <div class="row-between"><h3>Hour-by-hour activity</h3>
+          <label class="switch"><input type="checkbox" id="nightToggle"><span>Include night</span></label></div>
+        <div class="chart-wrap"><canvas id="chart" height="210"></canvas></div>
+        <div class="legend">
+          <span><i class="lg sun"></i> sunrise/sunset</span><span><i class="lg maj"></i> major solunar</span><span><i class="lg min"></i> minor</span><span><i class="lg dim"></i> outside legal light</span>
+        </div>
+        <p class="muted tiny">Tap or drag across the chart to inspect an hour.</p>
+      </article>
+
+      <article class="card" id="hourCard">
+        <div class="row-between">
+          <div><div class="hour-title" id="hourTitle">—</div><div class="muted" id="hourSub"></div></div>
+          <div class="hour-score" id="hourScore">–</div>
+        </div>
+        <div id="hourWhy" class="why"></div>
+        <div class="wx-grid" id="wxGrid"></div>
+        <div class="wind-row">
+          <svg id="compass" viewBox="-60 -60 120 120" width="112" height="112" aria-label="Wind direction"></svg>
+          <div id="scentText" class="scent-text"></div>
+        </div>
+        <h4>What moves this hour's score</h4>
+        <div id="factorList" class="factors"></div>
+      </article>
+
+      <article class="card">
+        <h3>Sun &amp; moon</h3>
+        <div id="astroGrid" class="astro-grid"></div>
+        <div id="solunar" class="solunar"></div>
+      </article>
+
+      <article class="card">
+        <h3>Weather trends</h3>
+        <div class="spark"><div class="spark-title">Temperature <span id="spTempVal"></span></div><canvas id="spTemp" height="70"></canvas></div>
+        <div class="spark"><div class="spark-title">Barometric pressure <span id="spPressVal"></span></div><canvas id="spPress" height="70"></canvas></div>
+        <div class="spark"><div class="spark-title">Wind &amp; gusts <span id="spWindVal"></span></div><canvas id="spWind" height="70"></canvas></div>
+        <div class="spark"><div class="spark-title">Precipitation <span id="spRainVal"></span></div><canvas id="spRain" height="60"></canvas></div>
+      </article>
+
+      <article class="card">
+        <h3>All species today</h3>
+        <div id="ranking" class="ranking"></div>
+      </article>
+
+      <p class="disclaimer">⚠️ HuntCast scores are <b>estimates</b> from simple rules of thumb, not guarantees. Animals do what they want. Always follow local seasons, bag limits, shooting hours, and landowner rules.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MAP ===================== -->
+  <section id="view-map" class="view">
+    <div id="map"></div>
+    <form id="searchForm" class="map-search" autocomplete="off">
+      <input id="searchInput" type="search" placeholder="Search a town, lake, WMA… or lat, lon" enterkeyhint="search" aria-label="Search places">
+      <button class="btn" type="submit">Go</button>
+      <ul id="searchResults" hidden></ul>
+    </form>
+    <button id="mapLocate" class="map-fab" aria-label="Use my location">📍</button>
+    <div class="map-sheet" id="mapSheet">
+      <div class="row-between">
+        <div class="sheet-loc"><b id="sheetName">—</b><div class="muted tiny" id="sheetCoord"></div></div>
+        <button id="saveSpotBtn" class="btn small">☆ Save spot</button>
+      </div>
+      <div class="sheet-hour">
+        <label for="hourSlider"><b id="sheetHour">—</b> <span id="sheetScore" class="pill"></span> <span id="sheetSpecies" class="muted"></span></label>
+        <input id="hourSlider" type="range" min="0" max="23" value="7" step="1">
+      </div>
+      <div class="muted tiny" id="sheetScent"></div>
+      <div class="muted tiny">Tap the map to move your hunting spot. 🟠 cone = where your scent drifts.</div>
+    </div>
+  </section>
+
+  <!-- ===================== SPOTS ===================== -->
+  <section id="view-spots" class="view">
+    <div class="pad-x">
+      <h2>Saved spots</h2>
+      <div class="save-row">
+        <input id="spotName" type="text" placeholder="Name this spot (e.g. North ridge stand)" aria-label="Spot name">
+        <button id="spotSave" class="btn">★ Save current</button>
+      </div>
+      <p class="muted tiny" id="spotCurrent"></p>
+      <div id="spotList" class="spot-list"></div>
+      <div id="spotEmpty" class="muted card center">No saved spots yet. Pick a place on the map or use your GPS, then save it here. Spots stay on this phone.</div>
+    </div>
+  </section>
+
+  <!-- ===================== INFO ===================== -->
+  <section id="view-info" class="view">
+    <div class="pad-x info">
+      <h2>Settings</h2>
+      <div class="card">
+        <label class="switch big"><input type="checkbox" id="nightToggle2"><span>Include night hours in daily rating &amp; best windows</span></label>
+        <div class="row-between setting">
+          <label for="legalSel">Legal shooting light</label>
+          <select id="legalSel"><option value="0">Sunrise → sunset</option><option value="15">±15 min</option><option value="30" selected>30 min before/after</option><option value="45">±45 min</option></select>
+        </div>
+        <button id="installBtn" class="btn" hidden>Install HuntCast on this phone</button>
+        <button id="clearBtn" class="btn ghost">Clear saved data &amp; cache</button>
+      </div>
+
+      <h2>How scores work</h2>
+      <div class="card prose" id="howScores"></div>
+
+      <h2>Species profiles</h2>
+      <div class="card prose" id="speciesTable"></div>
+
+      <h2>Data &amp; credits</h2>
+      <div class="card prose">
+        <ul>
+          <li>Weather: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0), no API key.</li>
+          <li>Maps: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors; Imagery © Esri, Maxar, Earthstar Geographics; Topo © <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (CC-BY-SA).</li>
+          <li>Place search: Nominatim (OpenStreetMap). Library credits: Leaflet, SunCalc (BSD).</li>
+          <li>Everything else (scores, sun/moon, solunar) is computed on your phone.</li>
+        </ul>
+        <p class="muted tiny">HuntCast is an independent hobby project, not affiliated with HuntWise or any other app.</p>
+        <p class="muted tiny" id="versionLine"></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Main">
+  <button data-view="forecast" class="active"><span>📊</span>Forecast</button>
+  <button data-view="map"><span>🗺️</span>Map</button>
+  <button data-view="spots"><span>⭐</span>Spots</button>
+  <button data-view="info"><span>ℹ️</span>Info</button>
+</nav>
+<div id="toast" class="toast" hidden></div>
+
+<script src="vendor/leaflet.js"></script>
+<script src="vendor/suncalc.js"></script>
+<script src="js/util.js"></script>
+<script src="js/astro.js"></script>
+<script src="js/weather.js"></script>
+<script src="js/species.js"></script>
+<script src="js/model.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
