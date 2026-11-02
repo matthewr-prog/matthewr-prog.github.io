@@ -197,6 +197,7 @@
           <li>Place search: Nominatim (OpenStreetMap). Library credits: Leaflet, SunCalc (BSD).</li>
           <li>Everything else (scores, sun/moon, solunar) is computed on your phone.</li>
         </ul>
+        <div id="callsCredits" class="muted tiny"></div>
         <p class="muted tiny">HuntCast is an independent hobby project, not affiliated with HuntWise or any other app.</p>
         <p class="muted tiny" id="versionLine"></p>
       </div>
@@ -227,6 +228,20 @@
       <div id="shopBody"></div>
     </div>
   </section>
+  <!-- ===================== CALLS ===================== -->
+  <section id="view-calls" class="view">
+    <div class="pad-x calls">
+      <h2>Game calls</h2>
+      <p class="muted tiny">Real recordings of the sounds behind the calls, with when each works and why. Clips play at your phone’s media volume, so use the volume buttons. Tap Play again to stop.</p>
+      <div id="callsSp" class="strip shop-cats" hidden></div>
+      <div id="callsBody"></div>
+      <div class="card cl-dl">
+        <button type="button" class="btn alt" id="clDl" style="width:100%">⬇ Download all for offline</button>
+        <p class="muted tiny" id="clDlTxt">Clips are saved the first time you play them. Use this to save every clip before you head out of cell range.</p>
+      </div>
+      <p class="disclaimer" id="callsLegal">Electronic calls are illegal for most hunting. Rules vary by state and season, so check yours.</p>
+    </div>
+  </section>
 </main>
 
 <nav class="tabs" aria-label="Main">
@@ -235,6 +250,7 @@
   <button data-view="spots"><span>⭐</span>Spots</button>
   <button data-view="regs"><span>📋</span>Regs</button>
   <button data-view="shop"><span>🛒</span>Shop</button>
+  <button data-view="calls"><span>📣</span>Calls</button>
   <button data-view="info"><span>ℹ️</span>Info</button>
 </nav>
 <div id="toast" class="toast" hidden></div>
@@ -251,6 +267,7 @@
 <script src="js/shop.js"></script>
 <script src="js/share.js"></script>
 <script src="js/beeline.js"></script>
+<script src="js/calls.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
