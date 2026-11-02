@@ -2,7 +2,7 @@
 (function (HC) {
   'use strict';
   const U = HC.Util, M = HC.Model, SP = HC.Species;
-  const VERSION = '1.2.5';
+  const VERSION = '1.3.0';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const HOUR = 3600000;
@@ -657,6 +657,8 @@
     if (v === 'spots') renderSpots();
     if (v === 'regs' && HC.regs) HC.regs.show();
     if (v === 'shop' && HC.shop) HC.shop.show();
+    if (v === 'calls' && HC.calls) HC.calls.show();
+    if (v !== 'calls' && HC.calls) HC.calls.stop();
     if (v === 'forecast' && cur) setTimeout(() => { renderChart(); renderHeat(); renderSparks(); if (mini) { mini.invalidateSize(); rebuildField(); updateMini(); } }, 30);
     history.replaceState(null, '', '#' + v);
   }
@@ -698,7 +700,7 @@
       else if (e.target.closest('.ren')) { const n = prompt('Rename spot', s.name); if (n && n.trim()) { s.name = n.trim().slice(0, 60); saveSpots(); renderSpots(); } }
     });
     $('#clearBtn').onclick = async () => {
-      if (!confirm('Clear saved spots, settings, cached forecast and offline map tiles?')) return;
+      if (!confirm('Clear saved spots, settings, cached forecast, offline map tiles and saved call audio?')) return;
       localStorage.clear(); if (window.caches) (await caches.keys()).forEach((k) => caches.delete(k));
       toast('Cleared. Reloading…'); setTimeout(() => location.reload(), 600);
     };
@@ -713,8 +715,10 @@
   /* ------------------------------------------------------------------- init */
   function init() {
     bind(); renderInfo(); renderSpots(); updateLocUI();
+    // ask the browser to keep saved spots/settings/offline data from being evicted (silent; no prompt on most browsers)
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* ignore */ }
     const v = (location.hash || '').slice(1);
-    if (['forecast', 'map', 'spots', 'regs', 'shop', 'info'].indexOf(v) > 0) showView(v);
+    if (['forecast', 'map', 'spots', 'regs', 'shop', 'calls', 'info'].indexOf(v) > 0) showView(v);
     // Query params: ?lat=..&lon=..&sp=..  (handy for testing / sharing)
     const q = new URLSearchParams(location.search);
     if (q.get('sp') && SP.byId[q.get('sp')]) S.species = q.get('sp');
