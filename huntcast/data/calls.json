@@ -1,0 +1,735 @@
+{
+ "version": "1.3.0",
+ "legal": {
+  "title": "Before you use a call",
+  "text": "Electronic calls are illegal for most hunting. In Pennsylvania, electronic callers are allowed only for bobcats, coyotes, foxes, raccoons, crows and snow geese in the conservation season (so not for deer, turkey, bear or elk). Electronic decoys are allowed for crows, waterfowl and doves. The audio in this tab is for learning the sounds; playing it from your phone to call game may be illegal. Rules vary by state and season, so check yours.",
+  "source": "pgc"
+ },
+ "sources": {
+  "nwtf-sounds": {
+   "title": "NWTF: The Sounds of the Wild Turkey",
+   "url": "https://www.nwtf.org/content-hub/the-sounds-of-the-wild-turkey"
+  },
+  "nwtf-fall": {
+   "title": "NWTF: Call in a Turkey this Fall",
+   "url": "https://www.nwtf.org/content-hub/call-in-a-turkey-this-fall"
+  },
+  "rmef-talk": {
+   "title": "RMEF: When Elk Talk … and When They Don’t",
+   "url": "https://rmef.org/media/when-elk-talk-and-when-they-dont/"
+  },
+  "rmef-herd": {
+   "title": "RMEF: Getting Inside the Herd",
+   "url": "https://rmef.org/media/getting-inside-the-herd/"
+  },
+  "du-five": {
+   "title": "Ducks Unlimited: Five Duck Calls to Master this Off-Season",
+   "url": "https://www.ducks.org/hunting/duck-calling/five-duck-calls-to-master-this-off-season"
+  },
+  "du-goose": {
+   "title": "Ducks Unlimited: Goose Calling 101",
+   "url": "https://www.ducks.org/hunting/duck-calling/goose-calling-101"
+  },
+  "hw-deer": {
+   "title": "HuntWise: Deer Sounds Explained",
+   "url": "https://huntwise.com/field-guide/deer/a-guide-to-understanding-deer-sounds"
+  },
+  "ksu-coyote": {
+   "title": "Kansas State University Extension: Calling Coyotes (C-400)",
+   "url": "https://bookstore.ksre.ksu.edu/pubs/how-to-call-coyotes_C400.pdf"
+  },
+  "ah-coyote": {
+   "title": "American Hunter (NRA): Tips and Tactics for Calling Late-Winter Coyotes",
+   "url": "https://www.americanhunter.org/content/tips-and-tactics-for-calling-late-winter-coyotes/"
+  },
+  "mdc-coyote": {
+   "title": "Missouri Dept. of Conservation: Coyote field guide",
+   "url": "https://mdc.mo.gov/discover-nature/field-guide/coyote"
+  },
+  "ah-squirrel": {
+   "title": "American Hunter (NRA): Hunting Spring Squirrels",
+   "url": "https://www.americanhunter.org/content/hunting-spring-squirrels/"
+  },
+  "mdc-crow": {
+   "title": "Missouri Dept. of Conservation: No Caws for Alarm!",
+   "url": "https://mdc.mo.gov/magazines/conservationist/1997-01/no-caws-alarm"
+  },
+  "pgc": {
+   "title": "Pennsylvania Game Commission: Digest",
+   "url": "https://www.pgc.pa.gov/"
+  }
+ },
+ "clips": {
+  "deer-snort": {
+   "file": "audio/deer/alarm-snort.mp3",
+   "label": "Whitetail alarm snort (field recording)",
+   "title": "Hot summer woods hawk Deer snort Little Grassy RTR Trail July 2 2025",
+   "author": "kvgarlic",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/kvgarlic/sounds/816601/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "Cut from a longer field recording; this is an alarm snort heard in the woods, not a hunter's snort-wheeze.",
+   "bytes": 76004
+  },
+  "turkey-yelp": {
+   "file": "audio/turkey/yelp.mp3",
+   "label": "Turkey yelps",
+   "title": "Two Turkeys Yelping",
+   "author": "TheKingOfGeeks360",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/TheKingOfGeeks360/sounds/811204/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "The recordist does not say whether the birds were wild or farm turkeys.",
+   "bytes": 121004
+  },
+  "turkey-cluck": {
+   "file": "audio/turkey/cluck.mp3",
+   "label": "Hen cluck",
+   "title": "Soft Cluck and Click from Hen",
+   "author": "TheKingOfGeeks360",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/TheKingOfGeeks360/sounds/861244/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "The recordist does not say whether the bird was wild or a farm turkey.",
+   "bytes": 14084
+  },
+  "turkey-putt": {
+   "file": "audio/turkey/putt.mp3",
+   "label": "Turkey putts (alarm / nervous)",
+   "title": "Meleagris gallopavo - Wild Turkey XC134744",
+   "author": "Jonathon Jongsma",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+   "source_name": "Wikimedia Commons (from xeno-canto XC134744)",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Meleagris_gallopavo_-_Wild_Turkey_XC134744.ogg",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "Recording is labeled 'nervous calls from a female'.",
+   "bytes": 100844
+  },
+  "turkey-gobble": {
+   "file": "audio/turkey/gobble.mp3",
+   "label": "Tom gobbles",
+   "title": "Wild Turkey.wav",
+   "author": "itinerantmonk108",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/itinerantmonk108/sounds/684815/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 105884
+  },
+  "elk-bugle-nps": {
+   "file": "audio/elk/bugle-nps.mp3",
+   "label": "Bull elk bugles (Great Sand Dunes, CO)",
+   "title": "Elk bugle (NPS Sound Gallery)",
+   "author": "National Park Service",
+   "license": "Public domain (U.S. National Park Service)",
+   "license_url": "https://www.nps.gov/subjects/sound/gallery.htm",
+   "source_name": "NPS Sound Gallery",
+   "source_url": "https://www.nps.gov/subjects/sound/sounds-elk.htm",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "Recorded at Great Sand Dunes National Park & Preserve, Colorado.",
+   "bytes": 148282
+  },
+  "elk-bugle-pd": {
+   "file": "audio/elk/bugle-nps2.mp3",
+   "label": "Bull elk bugle",
+   "title": "American Elk Bugling.ogg",
+   "author": "Jim Pisarowicz (U.S. National Park Service)",
+   "license": "Public domain",
+   "license_url": "https://commons.wikimedia.org/wiki/File:American_Elk_Bugling.ogg",
+   "source_name": "Wikimedia Commons",
+   "source_url": "https://commons.wikimedia.org/wiki/File:American_Elk_Bugling.ogg",
+   "modified": "Converted to mono MP3 and volume-normalized.",
+   "note": "",
+   "bytes": 51884
+  },
+  "duck-quacks": {
+   "file": "audio/duck/quacks.mp3",
+   "label": "Mallard quacks",
+   "title": "Anas platyrhynchos - Mallard XC62258",
+   "author": "Jonathon Jongsma",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+   "source_name": "Wikimedia Commons (from xeno-canto XC62258)",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_XC62258.mp3",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "A real mallard call series, shown as a reference for the quack. It is not a hunter's call demo.",
+   "bytes": 35324
+  },
+  "duck-murmur": {
+   "file": "audio/duck/feed-murmur.mp3",
+   "label": "Hen mallard feeding murmur",
+   "title": "Anas platyrhynchos - Mallard XC518422",
+   "author": "Marie-Lan Taÿ Pamart",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "source_name": "Wikimedia Commons (from xeno-canto XC518422)",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_XC518422.mp3",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "Female mallard muttering while foraging (Jardin des Plantes, Paris). Close to what hunters call a feed chuckle.",
+   "bytes": 66471
+  },
+  "goose-honks": {
+   "file": "audio/goose/honks.mp3",
+   "label": "Canada goose honks (flyover)",
+   "title": "200427 Canada Goose honks single fly by, roof TORONTO 11am.wav",
+   "author": "TRP",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/TRP/sounds/567035/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 100844
+  },
+  "goose-chatter": {
+   "file": "audio/goose/chatter.mp3",
+   "label": "Canada goose chatter",
+   "title": "Canada Goose Chatter",
+   "author": "qubodup",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/qubodup/sounds/859152/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 68084
+  },
+  "goose-flock": {
+   "file": "audio/goose/flock.mp3",
+   "label": "Flock of Canada geese talking",
+   "title": "Canada Geese group honking",
+   "author": "TheKingOfGeeks360",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/TheKingOfGeeks360/sounds/808003/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 121004
+  },
+  "coyote-lone": {
+   "file": "audio/coyote/lone-howl.mp3",
+   "label": "Lone coyote howl",
+   "title": "Lone Coyote.aif",
+   "author": "Danjocross",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/Danjocross/sounds/164268/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 36764
+  },
+  "coyote-group": {
+   "file": "audio/coyote/group-howl.mp3",
+   "label": "Coyotes yipping and howling (Mojave, CA)",
+   "title": "Coyotes (NPS Sound Gallery)",
+   "author": "National Park Service",
+   "license": "Public domain (U.S. National Park Service)",
+   "license_url": "https://www.nps.gov/subjects/sound/gallery.htm",
+   "source_name": "NPS Sound Gallery",
+   "source_url": "https://www.nps.gov/subjects/sound/sounds-coyotes.htm",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "Recorded at Mojave National Preserve, California.",
+   "bytes": 102202
+  },
+  "squirrel-gray": {
+   "file": "audio/squirrel/chatter.mp3",
+   "label": "Eastern gray squirrel chatter",
+   "title": "Eastern Gray Squirrel chatter",
+   "author": "TheKingOfGeeks360",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/TheKingOfGeeks360/sounds/852386/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 32084
+  },
+  "crow-caw": {
+   "file": "audio/crow/caw.mp3",
+   "label": "American crow caw",
+   "title": "American Crow Single",
+   "author": "TheKingOfGeeks360",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/TheKingOfGeeks360/sounds/860982/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 9404
+  },
+  "crow-caws": {
+   "file": "audio/crow/caws.mp3",
+   "label": "American crows cawing",
+   "title": "American Crows",
+   "author": "deadrobotmusic",
+   "license": "CC0 1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source_name": "Freesound",
+   "source_url": "https://freesound.org/people/deadrobotmusic/sounds/673545/",
+   "modified": "Trimmed, high-pass filtered, volume-normalized, converted to mono MP3.",
+   "note": "",
+   "bytes": 131084
+  }
+ },
+ "species": [
+  {
+   "id": "deer",
+   "name": "Whitetail deer",
+   "emoji": "🦌",
+   "calls": [
+    {
+     "id": "grunt",
+     "name": "Contact grunt",
+     "clips": [],
+     "best": "Pre-rut through the chase phase, soft; again soft in the post-rut. Dawn and dusk are the high-activity periods.",
+     "why": "A short, low grunt says “a buck is passing through,” so a buck that hears it may stay relaxed and check it out.",
+     "tip": "Keep it short and soft. If a buck is already coming your way, stop calling and let him come.",
+     "src": [
+      "hw-deer"
+     ]
+    },
+    {
+     "id": "tending",
+     "name": "Tending grunt",
+     "clips": [],
+     "best": "Chase phase and peak breeding (the rut).",
+     "why": "A run of grunts sounds like a buck following a doe, which can draw a rival to see what he is missing.",
+     "tip": "Short, choppy series. Call, then wait 20–30 minutes and watch how deer react before changing tactics.",
+     "src": [
+      "hw-deer"
+     ]
+    },
+    {
+     "id": "doe-bleat",
+     "name": "Doe bleat",
+     "clips": [],
+     "best": "Soft contact bleats all season; the higher-pitched estrus bleat during the rut.",
+     "why": "A relaxed doe contact call (or a doe ready to breed) can pull in less-cautious bucks.",
+     "tip": "Keep it soft: a loud or frantic bleat can sound like a fawn in trouble and bring in an alert doe that spots you.",
+     "src": [
+      "hw-deer"
+     ]
+    },
+    {
+     "id": "fawn",
+     "name": "Fawn bleat / bawl",
+     "clips": [],
+     "best": "Heard any time fawns are with does; the bawl is rare.",
+     "why": "A fawn bleats to get its mother’s attention. A bawl means pain or panic.",
+     "tip": "Listen only. HuntWise advises against imitating a bawl because it can scatter deer.",
+     "src": [
+      "hw-deer"
+     ],
+     "listenOnly": true
+    },
+    {
+     "id": "snort",
+     "name": "Alarm snort",
+     "clips": [
+      "deer-snort"
+     ],
+     "best": "Whenever a deer has seen, heard or smelled something that worries it.",
+     "why": "A loud, deep exhale through the nose that warns other deer of danger.",
+     "tip": "Listen only. Do not imitate it. It tells you a deer knows something is up; sit still and see if it settles.",
+     "src": [
+      "hw-deer"
+     ],
+     "listenOnly": true
+    },
+    {
+     "id": "wheeze",
+     "name": "Snort-wheeze",
+     "clips": [],
+     "best": "Late pre-rut, chase and peak rut, early post-rut, aimed at a mature buck you can see.",
+     "why": "Two or three sharp snorts then a long wheeze is a buck’s challenge to another buck.",
+     "tip": "Use sparingly. It can run off younger bucks and does. Expect the buck to circle downwind.",
+     "src": [
+      "hw-deer"
+     ]
+    },
+    {
+     "id": "rattle",
+     "name": "Rattling",
+     "clips": [],
+     "best": "Pre-rut: light sparring sounds. Chase and peak breeding: aggressive. Post-rut: for mature bucks.",
+     "why": "Two bucks fighting draws bucks that want to check on the competition for does.",
+     "tip": "Start soft in case a deer is close, then rattle harder for a minute or two, then a grunt or two. On public land wear any blaze orange your state requires.",
+     "src": [
+      "hw-deer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "turkey",
+   "name": "Wild turkey",
+   "emoji": "🦃",
+   "calls": [
+    {
+     "id": "yelp",
+     "name": "Plain yelp",
+     "clips": [
+      "turkey-yelp"
+     ],
+     "best": "Spring breeding season; also fall to regroup a scattered flock (the louder assembly yelp).",
+     "why": "The basic hen sound, used by a hen to talk to a gobbler in breeding season and to gather her flock.",
+     "tip": "If you can yelp you can call a turkey. Use it to start a conversation and match how excited the birds are.",
+     "src": [
+      "nwtf-sounds"
+     ]
+    },
+    {
+     "id": "cluck",
+     "name": "Cluck",
+     "clips": [
+      "turkey-cluck"
+     ],
+     "best": "Spring or fall, especially when a gobbler hangs up, or softly on the roost.",
+     "why": "One or more short notes that get a bird’s attention and tell an approaching gobbler a hen is waiting.",
+     "tip": "Two or three single clucks. Soft is fine on the roost.",
+     "src": [
+      "nwtf-sounds"
+     ]
+    },
+    {
+     "id": "purr",
+     "name": "Cluck and purr",
+     "clips": [],
+     "best": "Spring or fall, once turkeys are close to your position.",
+     "why": "A soft, rolling sound turkeys make when content, often made by feeding birds. It reassures turkeys as they get close.",
+     "tip": "Keep it quiet. It is a close-range call.",
+     "src": [
+      "nwtf-sounds"
+     ]
+    },
+    {
+     "id": "cutt",
+     "name": "Cutt",
+     "clips": [],
+     "best": "Spring or fall, when a gobbler is henned up or hung up.",
+     "why": "Sharp, loud clucks show a turkey is excited, not alarmed. A hen that cutts may come fight another hen.",
+     "tip": "Mimic the hen you hear, cut her off, and be a bit more excited.",
+     "src": [
+      "nwtf-sounds"
+     ]
+    },
+    {
+     "id": "putt",
+     "name": "Putt (alarm)",
+     "clips": [
+      "turkey-putt"
+     ],
+     "best": "Last resort only, once a gobbler is in range and your shotgun is up.",
+     "why": "One or several sharp notes mean the bird has seen or heard danger.",
+     "tip": "Listen so you know the sound. Only putt at a gobbler with your shotgun up and on target: the bird will flush at the slightest movement.",
+     "src": [
+      "nwtf-sounds"
+     ],
+     "listenOnly": true
+    },
+    {
+     "id": "gobble",
+     "name": "Gobble",
+     "clips": [
+      "turkey-gobble"
+     ],
+     "best": "Mostly spring: the gobbler’s call to hens. Late evening works to get a tom to gobble on the roost.",
+     "why": "A male announcing himself to hens. A tom may come to fight a rival, or avoid him.",
+     "tip": "A call of last resort. On public land a gobble can draw other hunters to you.",
+     "src": [
+      "nwtf-sounds"
+     ]
+    },
+    {
+     "id": "keekee",
+     "name": "Kee-kee",
+     "clips": [],
+     "best": "Fall, to rebuild a scattered flock; spring on public land to sound different.",
+     "why": "A three-note call of lost young turkeys that adults also make.",
+     "tip": "About two seconds long. The kee-kee run is a kee-kee followed by a yelp.",
+     "src": [
+      "nwtf-sounds",
+      "nwtf-fall"
+     ]
+    },
+    {
+     "id": "owl",
+     "name": "Owl hoot (locator)",
+     "clips": [],
+     "best": "About 30 minutes before sunrise, or when cardinals start singing, until crows begin to call; also evening.",
+     "why": "Draws a shock gobble from a tom without using turkey sounds.",
+     "tip": "The eight-note barred owl “who cooks for you.”",
+     "src": [
+      "nwtf-sounds"
+     ]
+    },
+    {
+     "id": "crow",
+     "name": "Crow call (locator)",
+     "clips": [
+      "crow-caw"
+     ],
+     "best": "Any time other than sunrise and sunset.",
+     "why": "Several harsh “caw” notes get a tom to shock gobble.",
+     "tip": "Keep it short so it does not drown out a gobble. The clip is a real crow, the sound the call imitates.",
+     "src": [
+      "nwtf-sounds"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "elk",
+   "name": "Elk",
+   "emoji": "🫎",
+   "calls": [
+    {
+     "id": "bugle",
+     "name": "Bugle",
+     "clips": [
+      "elk-bugle-nps",
+      "elk-bugle-pd"
+     ],
+     "best": "September (peak rut) and October, when cows come into estrus; bulls bugle more as herds mill and move toward winter range.",
+     "why": "Draws a bull that wants to protect cows or challenge a rival. A satellite-bull bugle can challenge a cranky herd bull.",
+     "tip": "Most bulls come to a bugle once or twice before they get cautious and quiet. Note where calls come from and plan a downwind approach.",
+     "src": [
+      "rmef-talk",
+      "rmef-herd"
+     ]
+    },
+    {
+     "id": "mew",
+     "name": "Cow mew / chirp",
+     "clips": [],
+     "best": "Rut season; a soft cow call when the herd is reserved or after pressure.",
+     "why": "A cow call sounds like an elk joining the herd, and can bring out a jealous bull.",
+     "tip": "Don’t get carried away. Too much calling close to the herd can sound like a ruse.",
+     "src": [
+      "rmef-talk",
+      "rmef-herd"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "duck",
+   "name": "Ducks (mallard)",
+   "emoji": "🦆",
+   "calls": [
+    {
+     "id": "greeting",
+     "name": "Quack / five-note greeting",
+     "clips": [
+      "duck-quacks"
+     ],
+     "best": "Ducks in sight at a distance (louder, drawn-out “hail”) or close to the decoys (softer, shorter).",
+     "why": "Five descending quacks are the hen greeting, a building block for most mallard calls.",
+     "tip": "Start with one basic quack, then five descending notes. Change volume and tempo to match how the birds react.",
+     "src": [
+      "du-five"
+     ]
+    },
+    {
+     "id": "feed",
+     "name": "Feed chuckle",
+     "clips": [
+      "duck-murmur"
+     ],
+     "best": "When ducks are working close to or finishing into the decoys.",
+     "why": "The sound of mallards feeding says the spot is safe and has food.",
+     "tip": "The rolling style is “dugga dugga”; the single-cut style is short “ta” bursts.",
+     "src": [
+      "du-five"
+     ]
+    },
+    {
+     "id": "comeback",
+     "name": "Comeback call",
+     "clips": [],
+     "best": "When ducks need a push to turn or commit.",
+     "why": "A faster, more urgent version of the greeting call.",
+     "tip": "Add speed and urgency to the five-note greeting.",
+     "src": [
+      "du-five"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "goose",
+   "name": "Geese (Canada)",
+   "emoji": "🪿",
+   "calls": [
+    {
+     "id": "honk",
+     "name": "Honk",
+     "clips": [
+      "goose-honks"
+     ],
+     "best": "To get the attention of passing birds.",
+     "why": "A long, loud honk is the Canada goose’s “look over here.”",
+     "tip": "Stretch out a cluck. Use fast air, like blowing out birthday candles.",
+     "src": [
+      "du-goose"
+     ]
+    },
+    {
+     "id": "cluck",
+     "name": "Cluck / chatter",
+     "clips": [
+      "goose-chatter",
+      "goose-flock"
+     ],
+     "best": "As geese approach and finish into the decoys.",
+     "why": "Excited, fast, high-pitched calling convinces geese to close the distance; soft clucks finish them.",
+     "tip": "Master the cluck first (“ga-wick”). If the geese are silent, stay quiet and use a flag.",
+     "src": [
+      "du-goose"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "coyote",
+   "name": "Coyote / predators",
+   "emoji": "🐺",
+   "calls": [
+    {
+     "id": "lone",
+     "name": "Lone howl",
+     "clips": [
+      "coyote-lone",
+      "coyote-group"
+     ],
+     "best": "Winter breeding season: coyotes are more vocal and respond to howls. Early morning and late evening are the usual best times to call.",
+     "why": "A howl says another coyote is in the area. A coyote that answers gives away its position.",
+     "tip": "Make it long and drawn-out. If one answers, answer back with the same howl.",
+     "src": [
+      "ah-coyote",
+      "mdc-coyote",
+      "ksu-coyote"
+     ]
+    },
+    {
+     "id": "challenge",
+     "name": "Challenge bark / howl",
+     "clips": [],
+     "best": "Late winter breeding season, after a coyote has answered a lone howl.",
+     "why": "An aggressive howl. A coyote that answers your howl from a distance may send a challenge howl back.",
+     "tip": "Use sparingly: it can be too threatening for young or subordinate coyotes.",
+     "src": [
+      "ah-coyote"
+     ]
+    },
+    {
+     "id": "pup",
+     "name": "Pup distress",
+     "clips": [],
+     "best": "Same windows as other coyote calling: September–October is best; first hours after dawn and last hours before dark.",
+     "why": "A Ki-Yi call mimics a coyote pup that is hurt, which can attract coyotes.",
+     "tip": "Kansas State describes the Ki-Yi call as homemade from a cow horn and a brass shim; it can also mimic a howl.",
+     "src": [
+      "ksu-coyote"
+     ]
+    },
+    {
+     "id": "rabbit",
+     "name": "Cottontail / jackrabbit distress",
+     "clips": [],
+     "best": "September–October is best (coyote numbers are highest); first couple hours after dawn and the last hours before dark. February and March are the toughest.",
+     "why": "A dying rabbit says an easy meal is nearby; coyotes also respond out of curiosity.",
+     "tip": "Start with about a minute of high-pitched screams, pause under two minutes, then repeat quieter. Each squall is a separate breath. Call into the wind, and stop calling once a coyote is in sight and coming.",
+     "src": [
+      "ksu-coyote"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "squirrel",
+   "name": "Squirrel",
+   "emoji": "🐿️",
+   "calls": [
+    {
+     "id": "chatter",
+     "name": "Chatter",
+     "clips": [
+      "squirrel-gray"
+     ],
+     "best": "Spring or fall squirrel season, when squirrels are active and relaxed.",
+     "why": "Squirrels chatter when there is no danger, so it can reassure squirrels nearby.",
+     "tip": "Mostly use it to reassure; the article says it should otherwise be avoided.",
+     "src": [
+      "ah-squirrel"
+     ]
+    },
+    {
+     "id": "bark",
+     "name": "Bark",
+     "clips": [],
+     "best": "Spring or fall squirrel season.",
+     "why": "The main squirrel vocalization. Squirrels often answer it, so it helps you locate them.",
+     "tip": "Tap a hand-held bellows call lightly three to eight times for a gray squirrel bark.",
+     "src": [
+      "ah-squirrel"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crow",
+   "name": "Crow",
+   "emoji": "🐦‍⬛",
+   "calls": [
+    {
+     "id": "caw",
+     "name": "Caws / assembly",
+     "clips": [
+      "crow-caw",
+      "crow-caws"
+     ],
+     "best": "During your state’s crow season.",
+     "why": "A crow that sees a predator gives an assembly call; other crows flock to calls from a hunter.",
+     "tip": "The clips are real crows, for reference.",
+     "src": [
+      "mdc-crow"
+     ]
+    },
+    {
+     "id": "distress",
+     "name": "Distress / fight call",
+     "clips": [],
+     "best": "During your state’s crow season.",
+     "why": "A crow that has been attacked gives a distress call that summons other crows to its defense.",
+     "tip": "The Missouri Dept. of Conservation calls the distress call one of the best ways to attract crows.",
+     "src": [
+      "mdc-crow"
+     ]
+    },
+    {
+     "id": "owl",
+     "name": "Great horned owl call",
+     "clips": [],
+     "best": "During your state’s crow season.",
+     "why": "Crows mob owls and hawks, so mimicking one brings them in.",
+     "tip": "Mimicking a great horned owl or red-tailed hawk also draws crows.",
+     "src": [
+      "mdc-crow"
+     ]
+    }
+   ]
+  }
+ ]
+}
