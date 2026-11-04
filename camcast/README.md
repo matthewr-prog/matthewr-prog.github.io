@@ -27,3 +27,10 @@ v1.3.0: YouTube embeds now use www.youtube.com/embed with origin + strict-origin
 - +7 Erie News Now (WICU/WSEE) Skyview live cams via ipcamlive (City of Erie, Bayfront/Dobbins Landing, Millcreek Mall, Presque Isle from Waldameer, Corry, Meadville, Warren) — frameable live player + fresh snapshot thumbnails.
 - +1 link-type entry: YourErie/WJET Erie Bayfront WxCAM (site blocks automated access; opens on owner's site).
 - New `link` stream type and generic "Open site" button.
+
+## v1.5.0
+- +2 WeatherMet live cams (Erie International Airport, Conneaut Lake) as framed players.
+- +1 Erie Yacht Club North Basin live cam (ipcamlive, framed, fresh snapshot thumbnail).
+- +3 link-only public Nest cams (Warner Theatre, Erie Insurance Arena, UPMC Park); owner sets X-Frame-Options.
+- Airport: +27 verified live, embeddable YouTube airport cams (LAX x3, MDW, DFW, ATL, LAS x2, MIA x2, LGA, RNO, LHR x3, LBA, FRA, ZRH, ACE x2, SXM x2, HND x3, NRT x2, HKG). The 8 Caltrans "Airport" cams are now Traffic ("near LAX/BUR"). Removed the 3D tracker and replay entries.
+- New Park and Harbor chips. Park: Presque Isle (from Waldameer), Niagara Falls, Chautauqua Lake (We Wan Chu), Brooks Falls (Katmai).
