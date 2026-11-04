@@ -1,4 +1,4 @@
-const CamMap=(()=>{let map,cluster;const icons={Traffic:'🚗',Weather:'🌨️',City:'🏙️',Airport:'✈️',Satellite:'🛰️'};
+const CamMap=(()=>{let map,cluster;const icons={Traffic:'🚗',Weather:'🌨️',City:'🏙️',Airport:'✈️',Satellite:'🛰️',Park:'🌲',Harbor:'⚓',Nature:'🌿',Beach:'🏖️'};
 function init(){map=L.map('map',{worldCopyJump:true}).setView([35,-45],2);
  const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
  let fails=0;osm.on('tileerror',()=>{if(++fails===3){map.removeLayer(osm);L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors'}).addTo(map)}});

@@ -1,4 +1,4 @@
-(async()=>{const $=id=>document.getElementById(id);const CATS=['All','Live','Erie','Traffic','Weather','City','Airport','Satellite'];let cat='All',all=[],limit=120;
+(async()=>{const $=id=>document.getElementById(id);const CATS=['All','Live','Erie','Traffic','Weather','City','Airport','Park','Harbor','Satellite'];let cat='All',all=[],limit=120;
  all=await (await fetch('data/cameras.json')).json();CamMap.init();
  $('cats').innerHTML=CATS.map(c=>`<button data-c="${c}" class="${c===cat?'on':''}">${c==='All'?'All':c==='Live'?'🔴 Live video':c==='Erie'?'📍 Erie area':CamMap.icons[c]+' '+c}</button>`).join('');
  $('cats').onclick=e=>{const b=e.target.closest('button');if(!b)return;cat=b.dataset.c;[...$('cats').children].forEach(x=>x.classList.toggle('on',x===b));limit=120;apply();if(cat==='Erie')CamMap.fly(42.02,-80.05,9)};
