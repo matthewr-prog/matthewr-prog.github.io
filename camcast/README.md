@@ -38,3 +38,7 @@ v1.3.0: YouTube embeds now use www.youtube.com/embed with origin + strict-origin
 ## v1.6.0
 - Digital pan & zoom on every cam (not real PTZ). Pinch or wheel to zoom (1-5x), drag to pan (clamped to edges), double-tap or double-click to reset. A toolbar under the video has ➕ ➖ ⬆️ ⬇️ ⬅️ ➡️ Reset and "✋ Pan/Zoom". On video and embedded players, the gesture layer is only active while zoomed or in Pan/Zoom mode, so player controls still work.
 - Angle switcher: cams within about 300 m that share a name word (or about 1 km with 2 shared words, or the same pin) are grouped at load. The viewer shows "Angles: 1 2 3" buttons.
+
+## v1.7.0
+- YouTube safety net. On error 150-153 the player retries once on youtube-nocookie.com. It also sends widget_referrer. If it still fails, it switches to the next angle in the group, or shows "Owner blocks playback in other apps" with a big Open in YouTube button. A failed video ID is saved in localStorage (`camcast_badyt`) and hidden on that device from then on.
+- Polar chip (🧊, lat >= 66.56 or <= -60). Adds 51 Fintraffic Lapland road weather cams north of the Arctic Circle.
