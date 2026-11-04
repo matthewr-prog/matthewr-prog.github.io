@@ -1,0 +1,19 @@
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:15px system-ui,sans-serif}
+body{display:flex;flex-direction:column}header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#161b22}
+h1{font-size:18px;margin:0}#count,.muted{color:#8b949e;font-size:13px}
+#controls{padding:8px 10px;background:#161b22;border-bottom:1px solid #30363d}
+#q{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:15px}
+#cats{display:flex;gap:6px;overflow-x:auto;margin-top:8px}#cats button{flex:none;padding:6px 12px;border-radius:16px;border:1px solid #30363d;background:#0d1117;color:#c9d1d9}
+#cats button.on{background:#f0883e;border-color:#f0883e;color:#111;font-weight:600}
+main{flex:1;position:relative;overflow:hidden}.view{display:none;position:absolute;inset:0;overflow:auto}.view.active{display:block}
+#map{position:absolute;inset:0}#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:10px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden;cursor:pointer}.card img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;display:block}
+.card .t{padding:6px 8px;font-size:13px}.badge{display:inline-block;font-size:11px;padding:1px 6px;border-radius:8px;background:#30363d;margin-top:3px}
+.about{padding:16px;line-height:1.5}nav{display:flex;background:#161b22;border-top:1px solid #30363d;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;padding:12px;background:none;border:0;color:#8b949e;font-size:14px}nav button.on{color:#f0883e}
+#viewer{position:fixed;inset:0;background:#000c;z-index:2000;display:flex;align-items:center;justify-content:center}#viewer[hidden]{display:none}
+.vbox{background:#161b22;width:min(100%,900px);max-height:100%;overflow:auto;border-radius:12px;padding:10px}
+.vhead{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}#vClose{background:#30363d;color:#fff;border:0;border-radius:8px;width:36px;height:36px;font-size:18px}
+#vStage{background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}#vStage>*{width:100%;height:100%;border:0;object-fit:contain}
+#vPlay{margin:8px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}#vPlay input{flex:1}#vPlay button,#vPlay a{background:#30363d;color:#fff;border:0;border-radius:8px;padding:6px 10px;text-decoration:none}
+.live{color:#f85149;font-weight:700}
