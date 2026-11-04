@@ -34,3 +34,7 @@ v1.3.0: YouTube embeds now use www.youtube.com/embed with origin + strict-origin
 - +3 link-only public Nest cams (Warner Theatre, Erie Insurance Arena, UPMC Park); owner sets X-Frame-Options.
 - Airport: +27 verified live, embeddable YouTube airport cams (LAX x3, MDW, DFW, ATL, LAS x2, MIA x2, LGA, RNO, LHR x3, LBA, FRA, ZRH, ACE x2, SXM x2, HND x3, NRT x2, HKG). The 8 Caltrans "Airport" cams are now Traffic ("near LAX/BUR"). Removed the 3D tracker and replay entries.
 - New Park and Harbor chips. Park: Presque Isle (from Waldameer), Niagara Falls, Chautauqua Lake (We Wan Chu), Brooks Falls (Katmai).
+
+## v1.6.0
+- Digital pan & zoom on every cam (not real PTZ). Pinch or wheel to zoom (1-5x), drag to pan (clamped to edges), double-tap or double-click to reset. A toolbar under the video has ➕ ➖ ⬆️ ⬇️ ⬅️ ➡️ Reset and "✋ Pan/Zoom". On video and embedded players, the gesture layer is only active while zoomed or in Pan/Zoom mode, so player controls still work.
+- Angle switcher: cams within about 300 m that share a name word (or about 1 km with 2 shared words, or the same pin) are grouped at load. The viewer shows "Angles: 1 2 3" buttons.
