@@ -22,3 +22,8 @@ v1.3.0 sources: Caltrans CWWP2, TfL JamCams (api.tfl.gov.uk/Place/Type/JamCam), 
 v1.3.0: +168 YouTube 24/7 live cams (verified isLiveNow + playableInEmbed, embedded via youtube-nocookie), +109 Caltrans HLS video cams (CORS ok), +35 PennDOT 511PA snapshots (Erie & Pittsburgh). `live:true` marks video cams; 'Live video' chip filters them. Map tiles: CARTO Voyager. YouTube streams can end; re-verify with oembed + watch page `"isLiveNow":true`.
 
 v1.3.0: YouTube embeds now use www.youtube.com/embed with origin + strict-origin-when-cross-origin referrer (fixes error 151/153), IFrame API onError fallback and an 'Open in YouTube' button (`openUrl`). Erie area: `county` field ('Erie County, PA', 'Crawford County, PA', 'Chautauqua County, NY'); '📍 Erie area' chip filters cams with a county.
+
+## v1.4.0
+- +7 Erie News Now (WICU/WSEE) Skyview live cams via ipcamlive (City of Erie, Bayfront/Dobbins Landing, Millcreek Mall, Presque Isle from Waldameer, Corry, Meadville, Warren) — frameable live player + fresh snapshot thumbnails.
+- +1 link-type entry: YourErie/WJET Erie Bayfront WxCAM (site blocks automated access; opens on owner's site).
+- New `link` stream type and generic "Open site" button.
