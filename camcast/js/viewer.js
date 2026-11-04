@@ -3,14 +3,14 @@ const Viewer=(()=>{let hls,timer,ptimer;const $=id=>document.getElementById(id);
 function stop(){if(hls){hls.destroy();hls=null}clearInterval(timer);clearInterval(ptimer);$('vStage').innerHTML='';$('vPlay').innerHTML=''}
 function bust(u){return u+(u.includes('?')?'&':'?')+'t='+Date.now()}
 function liveImg(u,sec=(30)){const im=new Image();im.src=bust(u);im.alt='live';$('vStage').appendChild(im);timer=setInterval(()=>im.src=bust(u),sec*1000);return im}
-function open(c){stop();$('vName').textContent=c.name;$('vMeta').textContent=c.category+' · '+c.region;$('vAttr').textContent='Source: '+c.attribution;
+function open(c){stop();$('vName').textContent=c.name;$('vMeta').textContent=(c.live?'🔴 LIVE VIDEO · ':'📷 Snapshot · ')+c.category+' · '+c.region;$('vAttr').textContent='Source: '+c.attribution;
  const st=$('vStage');
  if(c.streamType==='hls'){const v=document.createElement('video');v.controls=v.muted=v.autoplay=v.playsInline=true;st.appendChild(v);
   if(v.canPlayType('application/vnd.apple.mpegurl'))v.src=c.streamUrl;
   else if(window.Hls&&Hls.isSupported()){hls=new Hls({lowLatencyMode:true});hls.loadSource(c.streamUrl);hls.attachMedia(v);
    hls.on(Hls.Events.ERROR,(e,d)=>{if(d.fatal&&c.snapshotUrl){stop();st.innerHTML='';liveImg(c.snapshotUrl);addPlay(c,'Video unavailable, showing snapshots.')}})}
   v.play().catch(()=>{})}
- else if(c.streamType==='iframe'||c.streamType==='youtube'){const f=document.createElement('iframe');f.src=c.streamUrl+(c.streamType==='youtube'?'&autoplay=1&mute=1':'');f.allow='autoplay; fullscreen; encrypted-media';f.allowFullscreen=true;st.appendChild(f)}
+ else if(c.streamType==='iframe'||c.streamType==='youtube'){const f=document.createElement('iframe');f.src=c.streamUrl+(c.streamType==='youtube'&&!c.streamUrl.includes('autoplay')?'&autoplay=1&mute=1':'');f.allow='autoplay; fullscreen; encrypted-media';f.allowFullscreen=true;st.appendChild(f)}
  else liveImg(c.streamUrl,c.category==='Satellite'?300:30);
  addPlay(c);$('viewer').hidden=false}
 function addPlay(c,msg){const p=$('vPlay');p.innerHTML='';
@@ -24,6 +24,6 @@ function addPlay(c,msg){const p=$('vPlay');p.innerHTML='';
  else if(c.clipUrl){const b=document.createElement('button');b.textContent='⏪ Play latest clip';p.append(b);const n=document.createElement('span');n.className='muted';n.textContent=c.playbackNote||'';p.append(n);
   b.onclick=()=>{stop();const v=document.createElement('video');v.src=c.clipUrl;v.controls=v.muted=v.autoplay=v.playsInline=v.loop=true;$('vStage').appendChild(v);const lv=document.createElement('button');lv.textContent='● Live';lv.onclick=()=>open(c);$('vPlay').append(lv)}}
  else if(c.archiveUrl){p.innerHTML='<span class="live">● LIVE</span>';const a=document.createElement('a');a.href=c.archiveUrl;a.target='_blank';a.rel='noopener';a.textContent='Loops / archive ↗';p.append(a)}
- else p.innerHTML='<span class="live">● LIVE</span> <span class="muted">Live only</span>'}
+ else p.innerHTML=c.live?'<span class="live">● LIVE VIDEO</span>':'<span class="muted">📷 Live snapshot (auto-refresh)</span>'}
 document.addEventListener('DOMContentLoaded',()=>{$('vClose').onclick=()=>{stop();$('viewer').hidden=true};$('viewer').onclick=e=>{if(e.target.id==='viewer')$('vClose').click()}});
 return{open,stop}})();
