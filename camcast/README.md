@@ -1,4 +1,4 @@
-# CamCast v1.1.0
+# CamCast v1.2.0
 Static PWA: map + list of public, intentionally shared camera feeds. No Flock/ALPR, private, or login feeds.
 Deploy: copy this folder to `camcast/` in the GitHub Pages repo → https://matthewr-prog.github.io/camcast/
 Local test: `python3 -m http.server` in this folder, open http://localhost:8000
@@ -17,4 +17,6 @@ Append an object to `data/cameras.json`:
 - Verify the URL returns 200 with curl, then bump `V` in `sw.js` so phones fetch the new list.
 Sources: Caltrans CWWP2 CCTV JSON (`https://cwwp2.dot.ca.gov/data/dN/cctv/cctvStatusDNN.json`), NOAA STAR GOES `latest.jpg`, NASA YouTube.
 
-v1.1.0 sources: Caltrans CWWP2, TfL JamCams (api.tfl.gov.uk/Place/Type/JamCam), Fintraffic weathercam (tie.digitraffic.fi/api/weathercam/v1/stations, CC BY 4.0), Hong Kong TD (static.data.gov.hk Traffic_Camera_Locations_En.xml), NZTA (trafficnz.info/service/traffic/rest/4/cameras/all), NOAA GOES, NASA. Each camera also has `country` and `continent`; optional `clipUrl` (mp4) shows a 'Play latest clip' button.
+v1.2.0 sources: Caltrans CWWP2, TfL JamCams (api.tfl.gov.uk/Place/Type/JamCam), Fintraffic weathercam (tie.digitraffic.fi/api/weathercam/v1/stations, CC BY 4.0), Hong Kong TD (static.data.gov.hk Traffic_Camera_Locations_En.xml), NZTA (trafficnz.info/service/traffic/rest/4/cameras/all), NOAA GOES, NASA. Each camera also has `country` and `continent`; optional `clipUrl` (mp4) shows a 'Play latest clip' button.
+
+v1.2.0: +168 YouTube 24/7 live cams (verified isLiveNow + playableInEmbed, embedded via youtube-nocookie), +109 Caltrans HLS video cams (CORS ok), +35 PennDOT 511PA snapshots (Erie & Pittsburgh). `live:true` marks video cams; 'Live video' chip filters them. Map tiles: CARTO Voyager. YouTube streams can end; re-verify with oembed + watch page `"isLiveNow":true`.
