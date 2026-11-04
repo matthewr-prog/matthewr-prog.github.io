@@ -3,6 +3,7 @@ const Viewer=(()=>{let hls,timer,ptimer;const $=id=>document.getElementById(id);
 function stop(){if(hls){hls.destroy();hls=null}clearInterval(timer);clearInterval(ptimer);$('vStage').innerHTML='';$('vPlay').innerHTML=''}
 function bust(u){return u+(u.includes('?')?'&':'?')+'t='+Date.now()}
 function liveImg(u,sec=(30)){const im=new Image();im.src=bust(u);im.alt='live';$('vStage').appendChild(im);timer=setInterval(()=>im.src=bust(u),sec*1000);return im}
+function ytFail(c,code){const st=$('vStage');st.innerHTML='';const m=document.createElement('div');m.style.cssText='padding:20px;text-align:center;color:#c9d1d9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px';m.textContent='This live stream can\'t play inside CamCast right now (YouTube error '+code+'). It may have ended or the owner limits embedding.';const a=document.createElement('a');a.href=c.openUrl;a.target='_blank';a.rel='noopener';a.textContent='▶ Open in YouTube';a.style.cssText='background:#f85149;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700';m.append(a);st.append(m)}
 function open(c){stop();$('vName').textContent=c.name;$('vMeta').textContent=(c.live?'🔴 LIVE VIDEO · ':'📷 Snapshot · ')+c.category+' · '+c.region;$('vAttr').textContent='Source: '+c.attribution;
  const st=$('vStage');
  if(c.streamType==='hls'){const v=document.createElement('video');v.controls=v.muted=v.autoplay=v.playsInline=true;st.appendChild(v);
@@ -10,9 +11,12 @@ function open(c){stop();$('vName').textContent=c.name;$('vMeta').textContent=(c.
   else if(window.Hls&&Hls.isSupported()){hls=new Hls({lowLatencyMode:true});hls.loadSource(c.streamUrl);hls.attachMedia(v);
    hls.on(Hls.Events.ERROR,(e,d)=>{if(d.fatal&&c.snapshotUrl){stop();st.innerHTML='';liveImg(c.snapshotUrl);addPlay(c,'Video unavailable, showing snapshots.')}})}
   v.play().catch(()=>{})}
- else if(c.streamType==='iframe'||c.streamType==='youtube'){const f=document.createElement('iframe');f.src=c.streamUrl+(c.streamType==='youtube'&&!c.streamUrl.includes('autoplay')?'&autoplay=1&mute=1':'');f.allow='autoplay; fullscreen; encrypted-media';f.allowFullscreen=true;st.appendChild(f)}
+ else if(c.streamType==='iframe'||c.streamType==='youtube'){const yt=c.streamType==='youtube';const f=document.createElement('iframe');
+  f.referrerPolicy='strict-origin-when-cross-origin';f.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';f.allowFullscreen=true;
+  if(yt){f.id='ytf'+Date.now();f.src=c.streamUrl+(location.origin.startsWith('http')?'&origin='+encodeURIComponent(location.origin):'')}else f.src=c.streamUrl;st.appendChild(f);
+  if(yt){const hook=()=>{try{new YT.Player(f.id,{events:{onError:e=>ytFail(c,e.data)}})}catch(_){}};if(window.YT&&YT.Player)hook();else{const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{prev&&prev();hook()}}}}
  else liveImg(c.streamUrl,c.category==='Satellite'?300:30);
- addPlay(c);$('viewer').hidden=false}
+ addPlay(c);if(c.openUrl){const a=document.createElement('a');a.href=c.openUrl;a.target='_blank';a.rel='noopener';a.textContent='▶ Open in YouTube';$('vPlay').append(a)}$('viewer').hidden=false}
 function addPlay(c,msg){const p=$('vPlay');p.innerHTML='';
  if(c.archiveFrames&&c.archiveFrames.length){const fr=c.archiveFrames;const b=document.createElement('button');b.textContent='⏪ Playback';p.append(b);
   const n=document.createElement('span');n.className='muted';n.textContent=(msg?msg+' ':'')+(c.playbackNote||'');p.append(n);
