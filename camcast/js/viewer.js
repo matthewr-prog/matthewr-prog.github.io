@@ -36,14 +36,22 @@ function build(all){const par=all.map((_,i)=>i);const f=i=>par[i]===i?i:(par[i]=
 function show(c){let el=$('vAngles');if(!el){el=document.createElement('div');el.id='vAngles';$('vStage').before(el)}const arr=groups.get(c.id);
  if(!arr){el.hidden=true;el.innerHTML='';return}el.hidden=false;el.innerHTML='<span class="muted">Angles:</span>';
  arr.forEach((o,i)=>{const b=document.createElement('button');b.textContent=i+1;b.title=o.name;if(o.id===c.id)b.className='on';b.onclick=()=>Viewer.open(o);el.append(b)})}
-return{build,show}})();
+function next(c,bad){const arr=groups.get(c.id);if(!arr)return null;const i=arr.findIndex(o=>o.id===c.id);for(let k=1;k<arr.length;k++){const o=arr[(i+k)%arr.length];if(!(o.youtubeId&&bad.includes(o.youtubeId)))return o}return null}
+return{build,show,next}})();
 // Viewer: hls | iframe | image-refresh | youtube, plus snapshot playback
 const Viewer=(()=>{let hls,timer,ptimer;const $=id=>document.getElementById(id);
 function stop(){if(hls){hls.destroy();hls=null}clearInterval(timer);clearInterval(ptimer);Zoom.mount();$('vPlay').innerHTML=''}
 function bust(u){return u+(u.includes('?')?'&':'?')+'t='+Date.now()}
 function liveImg(u,sec=(30)){const im=new Image();im.src=bust(u);im.alt='live';$('vZoom').appendChild(im);timer=setInterval(()=>im.src=bust(u),sec*1000);return im}
-function ytFail(c,code){const st=$('vZoom');st.innerHTML='';const m=document.createElement('div');m.style.cssText='padding:20px;text-align:center;color:#c9d1d9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px';m.textContent='This live stream can\'t play inside CamCast right now (YouTube error '+code+'). It may have ended or the owner limits embedding.';const a=document.createElement('a');a.href=c.openUrl;a.target='_blank';a.rel='noopener';a.textContent=c.openLabel||(c.streamType==='youtube'?'▶ Open in YouTube':'↗ Open site');a.style.cssText='background:#f85149;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700';m.append(a);st.append(m)}
-function open(c){stop();Zoom.setType(c.streamType);Angles.show(c);$('vName').textContent=c.name;$('vMeta').textContent=(c.live?'🔴 LIVE VIDEO · ':'📷 Snapshot · ')+c.category+' · '+c.region;$('vAttr').textContent='Source: '+c.attribution;
+const BAD_KEY='camcast_badyt';function badYT(){return _bad}
+const _bad=[];function markBad(id){if(!_bad.includes(id))_bad.push(id)}
+function ytURL(c,nocookie){const id=c.youtubeId||(c.streamUrl.match(/embed\/([^?]+)/)||[])[1];const o=location.origin.startsWith('http')?'&origin='+encodeURIComponent(location.origin)+'&widget_referrer='+encodeURIComponent(location.href.split('#')[0]):'';
+ return 'https://www.youtube'+(nocookie?'-nocookie':'')+'.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1'+o}
+function ytFail(c,code){if(!c._retried&&[150,151,152,153].includes(+code)){c._retried=true;open(c,true);return}c._retried=false;
+ markBad(c.youtubeId);const nxt=Angles.next(c,badYT());if(nxt){open(nxt);const m=document.getElementById('vMeta');if(m)m.textContent='↪ Switched angle (previous cam blocks playback here) · '+m.textContent;return}
+ ytFailMsg(c,code)}
+function ytFailMsg(c,code){const st=$('vZoom');st.innerHTML='';const m=document.createElement('div');m.style.cssText='padding:20px;text-align:center;color:#c9d1d9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px';m.innerHTML='<b style="font-size:17px">Owner blocks playback in other apps</b><span>This stream can only be watched on YouTube (error '+code+'). CamCast will hide it on this device next time.</span>';const a=document.createElement('a');a.href=c.openUrl;a.target='_blank';a.rel='noopener';a.textContent=c.openLabel||(c.streamType==='youtube'?'▶ Open in YouTube':'↗ Open site');a.style.cssText='background:#f85149;color:#fff;padding:16px 28px;font-size:18px;border-radius:8px;text-decoration:none;font-weight:700';m.append(a);st.append(m)}
+function open(c,alt){stop();Zoom.setType(c.streamType);Angles.show(c);$('vName').textContent=c.name;$('vMeta').textContent=(c.live?'🔴 LIVE VIDEO · ':'📷 Snapshot · ')+c.category+' · '+c.region;$('vAttr').textContent='Source: '+c.attribution;
  const st=$('vZoom');
  if(c.streamType==='hls'){const v=document.createElement('video');v.controls=v.muted=v.autoplay=v.playsInline=true;st.appendChild(v);
   if(v.canPlayType('application/vnd.apple.mpegurl'))v.src=c.streamUrl;
@@ -52,7 +60,7 @@ function open(c){stop();Zoom.setType(c.streamType);Angles.show(c);$('vName').tex
   v.play().catch(()=>{})}
  else if(c.streamType==='iframe'||c.streamType==='youtube'){const yt=c.streamType==='youtube';const f=document.createElement('iframe');
   f.referrerPolicy='strict-origin-when-cross-origin';f.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';f.allowFullscreen=true;
-  if(yt){f.id='ytf'+Date.now();f.src=c.streamUrl+(location.origin.startsWith('http')?'&origin='+encodeURIComponent(location.origin):'')}else f.src=c.streamUrl;st.appendChild(f);
+  if(yt){f.id='ytf'+Date.now();f.src=ytURL(c,alt)}else f.src=c.streamUrl;st.appendChild(f);
   if(yt){const hook=()=>{try{new YT.Player(f.id,{events:{onError:e=>ytFail(c,e.data)}})}catch(_){}};if(window.YT&&YT.Player)hook();else{const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{prev&&prev();hook()}}}}
  else if(c.streamType==='link'){st.innerHTML='<div class="muted" style="padding:24px;text-align:center">This cam is only viewable on the owner\'s site. Tap the button below to open it.</div>'}
  else liveImg(c.streamUrl,c.category==='Satellite'?300:30);
@@ -70,4 +78,4 @@ function addPlay(c,msg){const p=$('vPlay');p.innerHTML='';
  else if(c.archiveUrl){p.innerHTML='<span class="live">● LIVE</span>';const a=document.createElement('a');a.href=c.archiveUrl;a.target='_blank';a.rel='noopener';a.textContent='Loops / archive ↗';p.append(a)}
  else p.innerHTML=c.streamType==='link'?'<span class="muted">🔗 Viewable on the owner\'s site</span>':c.live?'<span class="live">● LIVE VIDEO</span>':'<span class="muted">📷 Live snapshot (auto-refresh)</span>'}
 document.addEventListener('DOMContentLoaded',()=>{$('vClose').onclick=()=>{stop();$('viewer').hidden=true};$('viewer').onclick=e=>{if(e.target.id==='viewer')$('vClose').click()}});
-return{open,stop,setCams:a=>Angles.build(a)}})();
+return{open:c=>open(c),stop,badYT,setCams:a=>Angles.build(a)}})();
