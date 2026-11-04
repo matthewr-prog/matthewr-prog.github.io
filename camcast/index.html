@@ -7,13 +7,13 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <link rel="stylesheet" href="css/app.css"></head><body>
 <header><h1>📡 CamCast</h1><span id="count"></span></header>
-<div id="controls"><input id="q" type="search" placeholder="Search cams, roads, places…"><div id="cats"></div></div>
+<div id="controls"><input id="q" type="search" placeholder="Search cams, roads, places…"><div id="cats"></div><div id="row2"><select id="country"><option value="">🌍 All countries</option></select><button id="near">📍 Near me</button></div><div id="nearList"></div></div>
 <main><section id="mapView" class="view active"><div id="map"></div></section>
 <section id="listView" class="view"><div id="grid"></div></section>
 <section id="aboutView" class="view about"><h2>About CamCast</h2>
-<p>CamCast shows <b>public, intentionally shared</b> camera feeds: state DOT traffic cameras, mountain/weather road cams, NOAA GOES satellite imagery and NASA's public live stream.</p>
+<p>CamCast shows <b>public, intentionally shared</b> camera feeds: official open-data road and city cameras worldwide (Caltrans, TfL London, Fintraffic, Hong Kong TD, NZTA), mountain/weather road cams, NOAA GOES satellite imagery and NASA's public live stream.</p>
 <p>No Flock / ALPR (license plate) cameras, no private or unsecured cameras, nothing behind a login.</p>
-<p>Feeds belong to their publishers (see attribution on each). Availability depends on the source.</p><p class="muted">v1.0.0</p></section></main>
+<p>Feeds belong to their publishers (see attribution on each). Availability depends on the source.</p><p class="muted">v1.1.0</p></section></main>
 <nav id="tabs"><button data-v="mapView" class="on">🗺️ Map</button><button data-v="listView">▦ List</button><button data-v="aboutView">ℹ️ About</button></nav>
 <div id="viewer" hidden><div class="vbox"><div class="vhead"><div><b id="vName"></b><div id="vMeta" class="muted"></div></div><button id="vClose">✕</button></div>
 <div id="vStage"></div><div id="vPlay"></div><div id="vAttr" class="muted"></div></div></div>
