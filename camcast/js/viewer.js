@@ -21,6 +21,8 @@ function addPlay(c,msg){const p=$('vPlay');p.innerHTML='';
    const show=i=>{im.src=bust(fr[i]);lab.textContent=(fr.length-i)+' frames ago';r.value=i};let i=0,run=true;show(0);
    ptimer=setInterval(()=>{if(run){i=(i+1)%fr.length;show(i)}},900);r.oninput=()=>{i=+r.value;show(i)};pl.onclick=()=>{run=!run;pl.textContent=run?'⏸':'▶'};lv.onclick=()=>open(c);
    p.append(pl,r,lab,lv)}}
+ else if(c.clipUrl){const b=document.createElement('button');b.textContent='⏪ Play latest clip';p.append(b);const n=document.createElement('span');n.className='muted';n.textContent=c.playbackNote||'';p.append(n);
+  b.onclick=()=>{stop();const v=document.createElement('video');v.src=c.clipUrl;v.controls=v.muted=v.autoplay=v.playsInline=v.loop=true;$('vStage').appendChild(v);const lv=document.createElement('button');lv.textContent='● Live';lv.onclick=()=>open(c);$('vPlay').append(lv)}}
  else if(c.archiveUrl){p.innerHTML='<span class="live">● LIVE</span>';const a=document.createElement('a');a.href=c.archiveUrl;a.target='_blank';a.rel='noopener';a.textContent='Loops / archive ↗';p.append(a)}
  else p.innerHTML='<span class="live">● LIVE</span> <span class="muted">Live only</span>'}
 document.addEventListener('DOMContentLoaded',()=>{$('vClose').onclick=()=>{stop();$('viewer').hidden=true};$('viewer').onclick=e=>{if(e.target.id==='viewer')$('vClose').click()}});
