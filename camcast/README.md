@@ -42,3 +42,6 @@ v1.3.0: YouTube embeds now use www.youtube.com/embed with origin + strict-origin
 ## v1.7.0
 - YouTube safety net. On error 150-153 the player retries once on youtube-nocookie.com. It also sends widget_referrer. If it still fails, it switches to the next angle in the group, or shows "Owner blocks playback in other apps" with a big Open in YouTube button. A failed video ID is saved in localStorage (`camcast_badyt`) and hidden on that device from then on.
 - Polar chip (🧊, lat >= 66.56 or <= -60). Adds 51 Fintraffic Lapland road weather cams north of the Arctic Circle.
+
+## v1.8.0
+- Erie to Cleveland corridor: +113 ODOT/OHGO traffic cams (I-90, I-71, I-77, I-271, I-480, I-490, SR-2 and more across Cuyahoga, Lake and Ashtabula counties). Erie County PA PennDOT cams were already present. Total 996 cams.
